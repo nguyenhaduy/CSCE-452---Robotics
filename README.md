@@ -1,4 +1,4 @@
-# CSCE-452---Robotics
+# CSCE-452 - Robotics
 ## Robotic Projects
 ### Team Members
 - Duy Nguyen
@@ -8,4 +8,4 @@
 
 ### Log
 #### February 22, 2017
-- All team members met to discuss which tools to use
+- All team members met to discuss which tools / programming languages to use
