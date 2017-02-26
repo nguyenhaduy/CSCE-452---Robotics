@@ -5,8 +5,8 @@
 - Alex Evans
 - Kyle Tremblay
 - Neal Patel
-
-### Log
+ 
+### Project 1 Log
 #### February 22, 2017
 - All team members met to discuss which tools / programming languages to use
 
