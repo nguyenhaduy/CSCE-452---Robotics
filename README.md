@@ -12,3 +12,11 @@
 
 #### February 26, 2017
 - All team members met to discuss the different parts of the project and split up the work evenly between all team members
+- Parts
+ - Website
+ - GUI
+ - Implementation of matrices
+- Tasks accomplished
+ - [x] Finished graphical user interface
+ - [x] Website is done, and simply needs to be updated with content
+ - [ ] Need to finish calculating the points for each axis from the transformation and rotation matrices
