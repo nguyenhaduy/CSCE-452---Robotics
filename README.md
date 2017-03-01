@@ -19,4 +19,7 @@
 - Tasks accomplished
  - [x] Finished graphical user interface
  - [x] Website is done, and simply needs to be updated with content
- - [ ] Need to finish calculating the points for each axis from the transformation and rotation matrices
+ - [x] Finished calculating the points for each axis from the transformation and rotation matrices
+
+#### March 1, 2017
+- Project is being finished up for the presentation
