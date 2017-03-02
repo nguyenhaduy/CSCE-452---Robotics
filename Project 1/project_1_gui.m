@@ -80,13 +80,7 @@ function project_1_gui_OpeningFcn(hObject, eventdata, handles, varargin)
     xlim([-400 400])
     ylim([0 400])
     hold on;
-    rectangle('Position',[-15,0,30,10],'FaceColor', 'y');
-    draw_arms;
-    
-   
-    X = [P1(1), P2(1), P3(1), P4(1)];
-    Y = [P1(2), P2(2), P3(2), P4(2)];
-    plot(X,Y,'.','markersize',30,'Color','r');    
+    update();
     
     set(gca, 'box','off','XTickLabel',[],'XTick',[],'YTickLabel',[],'YTick',[])
     
