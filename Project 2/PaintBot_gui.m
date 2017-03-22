@@ -53,6 +53,10 @@ elseif strcmp(evt.Key,'downarrow')
     inverseKine(P4(1), P4(2)-5);
 elseif strcmp(evt.Key,'uparrow')
     inverseKine(P4(1), P4(2)+5);
+elseif strcmp(evt.Key,'space')
+    global P4 points
+    points = [points, P4];
+    update();
 end
 disp(evt.Key)
 
@@ -77,10 +81,12 @@ function PaintBot_gui_OpeningFcn(hObject, eventdata, handles, varargin)
 % Update handles structure
     guidata(hObject, handles);
 
+set(hObject,'KeyPressFcn',@OperateOnKeyPress)
 set(hObject,'WindowButtonMotionFcn','','WindowButtonDownFcn',@ClickDown)
     
 %axis off;
-    global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points;
+    global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points continuousDraw;
+    continuousDraw = 0;
     T0_1 = [1 0 0 0; 0 1 0 0; 0 0 1 0; 0 0 0 1];
     T1_2 = [1 0 0 0; 0 1 0 150; 0 0 1 0; 0 0 0 1];
     T2_3 = [1 0 0 0; 0 1 0 100; 0 0 1 0; 0 0 0 1];
@@ -238,7 +244,7 @@ end
 function update()
 %Update all the points on graph
 
-global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points;
+global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points continuousDraw;
 
 P1 = T0_1 * P0;
 P2 = T0_1 * T1_2 * P0;
@@ -254,6 +260,9 @@ end
 X = [P1(1), P2(1), P3(1), P4(1)];
 Y = [P1(2), P2(2), P3(2), P4(2)];
 plot(X,Y,'.','markersize',30,'Color','r');
+if (continuousDraw == 1)
+    points = [points, P4];
+end
 hold on
 
 
@@ -309,18 +318,47 @@ global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points;
 l1 = 150;
 l2 = 100;
 l3 = 75;
-gamma = 0;
+
+if ((x^2 + y^2) > 280^2)
+    gamma = atan2d(x,y)
+elseif ((x^2 + y^2) > 250^2)&&(x>0) 
+    gamma = atan2d(x,y)-10
+elseif ((x^2 + y^2) > 250^2)&&(x<0)
+    gamma = atan2d(x,y)+10
+elseif ((x^2 + y^2) > 200^2)&&(x>0)
+    gamma = atan2d(x,y)-20
+elseif ((x^2 + y^2) > 200^2)&&(x<0)
+    gamma = atan2d(x,y)+20
+elseif ((x^2 + y^2) > 150^2)&&(x>0)
+    gamma = atan2d(x,y)-30
+elseif ((x^2 + y^2) > 150^2)&&(x<0)
+    gamma = atan2d(x,y)+30
+elseif (x>50)
+    gamma = -45
+elseif (x<=-50)
+    gamma = 45
+else
+    gamma = 0;
+end
 
 x2 = x - l3*sind(gamma)
 y2 = y - l3*cosd(gamma)
 
-if(y2/cosd(atan2d(x2,y2)) > l1+l2)
-    disp('Out of Range')
-    return;
+if ((x^2 + y^2) > 325^2)||((x^2 + y^2) < 50^2)
+     disp('Out of Range')
 end
+ 
+% if(y2/cosd(atan2d(x2,y2)) > l1+l2)
+%     disp('Out of Range')
+%     return;
+% end
 
 c_theta_2 = real((x2^2 + y2^2 - l1^2 - l2^2)/(2*l1*l2));
-s_theta_2 = real(sqrt(1-c_theta_2^2));
+if (x>=0)
+    s_theta_2 = real(sqrt(1-c_theta_2^2));
+else
+    s_theta_2 = real(sqrt(1-c_theta_2^2));
+end
 s_theta_1 = real((l1 + l2*c_theta_2)*y - l2*s_theta_2*x)/(x^2 + y^2);
 c_theta_1 = real(sqrt(1-s_theta_1^2));
 k1 = l1 + l2*c_theta_2;
@@ -330,25 +368,30 @@ phi = atan2(k2,k1);
 temp_theta2 = -atan2d(s_theta_2,c_theta_2);
 temp_theta1 = -real(atan2d(x2,y2) - acosd((x2^2 + y2^2 + l1^2 - l2^2)/(2*l1*sqrt(x2^2 + y2^2))));
 temp_theta3 = -(gamma - (-temp_theta1 - temp_theta2));
+if (temp_theta3 >= 180)
+	temp_theta3 = temp_theta3 -360;
+elseif (temp_theta3 <= -180)
+	temp_theta3 = temp_theta3 + 360;
+end
 
-% if (abs(theta1 - temp_theta1) > 60)|(abs(theta2 - temp_theta2) > 60)|(abs(theta3 - temp_theta3) > 60)
-%     speed = 30
-% else if (abs(theta1 - temp_theta1) > 30)|(abs(theta2 - temp_theta2) > 30)|(abs(theta3 - temp_theta3) > 30)
-%     speed = 10
-%     else
-%     speed = 5
-%     end
-% end
 
-speed = 1;
+if (abs(theta1 - temp_theta1) > 60)||(abs(theta2 - temp_theta2) > 60)||(abs(theta3 - temp_theta3) > 60)
+    speed = 20;
+elseif (abs(theta1 - temp_theta1) > 30)||(abs(theta2 - temp_theta2) > 30)||(abs(theta3 - temp_theta3) > 30)
+    speed = 10;
+else
+    speed = 1;
+end
+
+% speed = 1;
 
 step1 = abs(theta1 - temp_theta1)/speed;
 step2 = abs(theta2 - temp_theta2)/speed;
 step3 = abs(theta3 - temp_theta3)/speed;
 
-for i = 1:(3*speed)
+while ((abs(theta1 - temp_theta1) > step1)||(abs(theta2 - temp_theta2) > step2)||(abs(theta3 - temp_theta3) > step3))
     if (abs(theta1 - temp_theta1) > step1)
-        if (theta1 < temp_theta1)
+        if (theta1 <= temp_theta1)
             theta1 = theta1 + step1;
             if (theta1 >= 180)
                 theta1 = -180;
@@ -362,7 +405,7 @@ for i = 1:(3*speed)
     end  
     
     if abs(theta2 - temp_theta2) > step2
-        if (theta2 < temp_theta2)
+        if (theta2 <= temp_theta2)
             theta2 = theta2 + step2;
             if (theta2 >= 180)
                 theta2 = -180;
@@ -376,7 +419,7 @@ for i = 1:(3*speed)
     end
     
     if abs(theta3 - temp_theta3) > step3
-        if (theta3 < temp_theta3)
+        if (theta3 <= temp_theta3)
             theta3 = theta3 + step3;
             if (theta3 >= 180)
                 theta3 = -180;
@@ -404,7 +447,6 @@ T2_3 = T_matrix(theta3, T2_3);
 T1_2 = T_matrix(theta2, T1_2);
 T0_1 = T_matrix(theta1, T0_1);
 
-
 update();
 
 
@@ -413,4 +455,5 @@ function ContinuousPaint_Callback(hObject, eventdata, handles)
 % hObject    handle to ContinuousPaint (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points;
+global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points continuousDraw;
+continuousDraw = ~continuousDraw;
