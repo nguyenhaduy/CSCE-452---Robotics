@@ -23,3 +23,16 @@
 
 #### March 1, 2017
 - Project is being finished up for the presentation
+
+### Project 2 Log
+#### March 21, 2017
+- Team members met to work on portions of the project
+- We worked on the mathematics portion of the inverse kinematics (didn't finish)
+
+#### March 22, 2017
+- Now able to effectively calculate the new angles that are used with inverse kinematics
+- Tasks accomplished
+ - [x] Finished calculations (for the most part)
+ - [x] Graphical user interface is finished, in addition to:
+  - [x] Being able to go to any reachable point by clicking on the area
+  - [x] Continuous painting so we don't need to press the Paint button each time
