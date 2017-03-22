@@ -24,6 +24,8 @@
 #### March 1, 2017
 - Project is being finished up for the presentation
 
+---
+
 ### Project 2 Log
 #### March 21, 2017
 - Team members met to work on portions of the project
