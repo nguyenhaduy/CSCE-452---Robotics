@@ -54,7 +54,6 @@ elseif strcmp(evt.Key,'downarrow')
 elseif strcmp(evt.Key,'uparrow')
     inverseKine(P4(1), P4(2)+5);
 elseif strcmp(evt.Key,'space')
-    global P4 points
     points = [points, P4];
     update();
 end
@@ -249,7 +248,7 @@ global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points continuous
 P1 = T0_1 * P0;
 P2 = T0_1 * T1_2 * P0;
 P3 = T0_1 * T1_2 * T2_3 * P0;
-P4 = T0_1 * T1_2 * T2_3 * T3_4 * P0;
+P4 = T0_1 * T1_2 * T2_3 * T3_4 * P0
 
 cla;
 rectangle('Position',[-15,0,30,10],'FaceColor', 'y');
@@ -319,39 +318,19 @@ l1 = 150;
 l2 = 100;
 l3 = 75;
 
-if ((x^2 + y^2) > 280^2)
-    gamma = atan2d(x,y)
-elseif ((x^2 + y^2) > 250^2)&&(x>0) 
-    gamma = atan2d(x,y)-10
-elseif ((x^2 + y^2) > 250^2)&&(x<0)
-    gamma = atan2d(x,y)+10
-elseif ((x^2 + y^2) > 200^2)&&(x>0)
-    gamma = atan2d(x,y)-20
-elseif ((x^2 + y^2) > 200^2)&&(x<0)
-    gamma = atan2d(x,y)+20
-elseif ((x^2 + y^2) > 150^2)&&(x>0)
-    gamma = atan2d(x,y)-30
-elseif ((x^2 + y^2) > 150^2)&&(x<0)
-    gamma = atan2d(x,y)+30
-elseif (x>50)
-    gamma = -45
-elseif (x<=-50)
-    gamma = 45
+if ((x^2 + y^2) < 125^2)
+    gamma = 0
 else
-    gamma = 0;
+    gamma = atan2d(x,y)
 end
 
-x2 = x - l3*sind(gamma)
-y2 = y - l3*cosd(gamma)
+x2 = x - l3*sind(gamma);
+y2 = y - l3*cosd(gamma);
 
-if ((x^2 + y^2) > 325^2)||((x^2 + y^2) < 50^2)
+if (-50<=x)&&(x<=50)&&(25<=y)&&(y<=125)
      disp('Out of Range')
+     return
 end
- 
-% if(y2/cosd(atan2d(x2,y2)) > l1+l2)
-%     disp('Out of Range')
-%     return;
-% end
 
 c_theta_2 = real((x2^2 + y2^2 - l1^2 - l2^2)/(2*l1*l2));
 if (x>=0)
@@ -368,12 +347,13 @@ phi = atan2(k2,k1);
 temp_theta2 = -atan2d(s_theta_2,c_theta_2);
 temp_theta1 = -real(atan2d(x2,y2) - acosd((x2^2 + y2^2 + l1^2 - l2^2)/(2*l1*sqrt(x2^2 + y2^2))));
 temp_theta3 = -(gamma - (-temp_theta1 - temp_theta2));
-if (temp_theta3 >= 180)
-	temp_theta3 = temp_theta3 -360;
-elseif (temp_theta3 <= -180)
-	temp_theta3 = temp_theta3 + 360;
-end
+temp_theta3 = mod(temp_theta3,360)
 
+% if (temp_theta3 >= 180)
+% 	temp_theta3 = temp_theta3 -180
+% elseif (temp_theta3 <= -180)
+% 	temp_theta3 = temp_theta3 + 180
+% end
 
 if (abs(theta1 - temp_theta1) > 60)||(abs(theta2 - temp_theta2) > 60)||(abs(theta3 - temp_theta3) > 60)
     speed = 20;
@@ -421,13 +401,13 @@ while ((abs(theta1 - temp_theta1) > step1)||(abs(theta2 - temp_theta2) > step2)|
     if abs(theta3 - temp_theta3) > step3
         if (theta3 <= temp_theta3)
             theta3 = theta3 + step3;
-            if (theta3 >= 180)
-                theta3 = -180;
+            if (theta3 >= 360)
+                theta3 = -360;
             end
         else
             theta3 = theta3 - step3;
-            if (theta3 <= -180)
-                theta3 = 180;
+            if (theta3 <= -360)
+                theta3 = 360;
             end
         end
     end
@@ -449,8 +429,57 @@ T0_1 = T_matrix(theta1, T0_1);
 
 update();
 
-
+function inverseKine2(xGoal,yGoal)
+% Input is the polar coordinates of end effector's position.
+%
+% In order to use this function, you'll need to convert the end
+% effector's position to spherical coordinates. All you'll need
+% is r (distance from origin to point and azimuth (angular direction).
+% These can be calculated as such: r = sqrt(x^2+y^2) and azimuth = atan2(y,x).
+%
 % --- Executes on button press in ContinuousPaint.
+
+global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points;
+
+ycurrent = P4(2); %Not using this  
+xcurrent = P4(1); %Starting position (x)   
+xchange = xcurrent - xGoal %Current distance from goal
+ychange = ycurrent - yGoal
+%Length of segment 1: 0.37, segment 2:0.374, segment 3:0.2295 
+
+l1 = 150;
+l2 = 100;
+l3 = 75;
+
+while ((xchange > 1 || xchange < -1) || (ychange < -1 || ychange > 1))    
+        in1 = l1*cos(theta1); %These equations are stated in the link provided
+        in2 = l2*cos(theta1+theta2);
+        in3 = l3*cos(theta1+theta2+theta3);
+        in4 = -l1*sin(theta1);
+        in5 = -l2*sin(theta1+theta2); 
+        in6 = -l3*sin(theta1+theta2+theta3); 
+        jacob = [in1+in2+in3, in2+in3, in3; in4+in5+in6, in5+in6, in6; 1,1,1];
+        invJacob = inv(jacob); 
+        xcurrent = (l1+2) * sin(theta1) + l2 * sin(theta1+theta2) + (l3+2) * sin(theta1+theta2+theta3) 
+        ycurrent = (l1+2) * cos(theta1) + l2 * cos(theta1+theta2) + (l3+2) * cos(theta1+theta2+theta3)        
+        xIncrement = (xGoal - xcurrent)/100; 
+        yIncrement = (yGoal - ycurrent)/100; 
+        increMatrix = [xcurrent; ycurrent; 1]; %dx/dz/phi 
+        change = invJacob * increMatrix; %dtheta1/dtheta2/dtheta3  
+        theta1 = theta1 + change(1)  
+        theta2 = theta2 + change(2)  
+        theta3 = theta3 + change(3)
+        xcurrent = (l1+2) * sin(theta1) + l2 * sin(theta1+theta2) + (l3+2) * sin(theta1+theta2+theta3)  
+        ycurrent = (l1+2) * cos(theta1) + l2 * cos(theta1+theta2) + (l3+2) * cos(theta1+theta2+theta3)          
+        xchange = xcurrent - xGoal
+        ychange = ycurrent - yGoal
+        T2_3 = T_matrix(theta3, T2_3);
+        T1_2 = T_matrix(theta2, T1_2);
+        T0_1 = T_matrix(theta1, T0_1);
+        update();
+        drawnow
+end
+
 function ContinuousPaint_Callback(hObject, eventdata, handles)
 % hObject    handle to ContinuousPaint (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
