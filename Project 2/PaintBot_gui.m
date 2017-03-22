@@ -54,7 +54,6 @@ elseif strcmp(evt.Key,'downarrow')
 elseif strcmp(evt.Key,'uparrow')
     inverseKine(P4(1), P4(2)+5);
 elseif strcmp(evt.Key,'space')
-    global P4 points
     points = [points, P4];
     update();
 end
@@ -319,23 +318,43 @@ l1 = 150;
 l2 = 100;
 l3 = 75;
 
-if ((x^2 + y^2) > 280^2)
+if ((x^2 + y^2) > 310^2)
     gamma = atan2d(x,y)
-elseif ((x^2 + y^2) > 250^2)&&(x>0) 
-    gamma = atan2d(x,y)-10
-elseif ((x^2 + y^2) > 250^2)&&(x<0)
-    gamma = atan2d(x,y)+10
-elseif ((x^2 + y^2) > 200^2)&&(x>0)
-    gamma = atan2d(x,y)-20
-elseif ((x^2 + y^2) > 200^2)&&(x<0)
-    gamma = atan2d(x,y)+20
-elseif ((x^2 + y^2) > 150^2)&&(x>0)
-    gamma = atan2d(x,y)-30
-elseif ((x^2 + y^2) > 150^2)&&(x<0)
-    gamma = atan2d(x,y)+30
-elseif (x>50)
+% %elseif ((x^2 + y^2) > 250^2)&&(-325 <= x) && (x <= -150) 
+% %    gamma = atan2d(x,y)-10
+% %elseif ((x^2 + y^2) > 250^2)&&(-150 <= x) && (x <= 0)
+%     gamma = atan2d(x,y)-15
+% elseif ((x^2 + y^2) > 250^2)&&(0 <= x) && (x <= 150)
+%     gamma = atan2d(x,y)+15
+% elseif ((x^2 + y^2) > 250^2)&&(150 <= x) && (x <= 325)
+%     gamma = atan2d(x,y)+10
+% elseif ((x^2 + y^2) > 200^2)&&(-325 <= x) && (x <= -150) 
+%     gamma = atan2d(x,y)-20
+% elseif ((x^2 + y^2) > 200^2)&&(-150 <= x) && (x <= 0) 
+%     gamma = atan2d(x,y)-25
+% elseif ((x^2 + y^2) > 200^2)&&(0 <= x) && (x <= 150) 
+%     gamma = atan2d(x,y)+25
+% elseif ((x^2 + y^2) > 200^2)&&(150 <= x) && (x <= 325) 
+%     gamma = atan2d(x,y)+20
+% elseif ((x^2 + y^2) > 150^2)&&(x>0) 
+%     gamma = atan2d(x,y)-30
+% elseif ((x^2 + y^2) > 150^2)&&(x>0) 
+%     gamma = atan2d(x,y)+30
+% elseif ((x^2 + y^2) > 100^2)&&(x>0)
+%     gamma = atan2d(x,y)-40
+% elseif ((x^2 + y^2) > 100^2)&&(x<0)
+%     gamma = atan2d(x,y)+40
+% elseif ((x^2 + y^2) > 50^2)&&(x>0)
+%     gamma = atan2d(x,y)-50
+% elseif ((x^2 + y^2) > 50^2)&&(x<0)
+%     gamma = atan2d(x,y)+50
+% elseif (x>50)
+%     gamma = -45
+% elseif (x<=-50)
+%     gamma = 45
+elseif(x<-240 && y < 240)
     gamma = -45
-elseif (x<=-50)
+elseif(x>250 && y < 250)
     gamma = 45
 else
     gamma = 0;
@@ -368,6 +387,7 @@ phi = atan2(k2,k1);
 temp_theta2 = -atan2d(s_theta_2,c_theta_2);
 temp_theta1 = -real(atan2d(x2,y2) - acosd((x2^2 + y2^2 + l1^2 - l2^2)/(2*l1*sqrt(x2^2 + y2^2))));
 temp_theta3 = -(gamma - (-temp_theta1 - temp_theta2));
+temp_theta3 = mod(temp_theta3,360);
 if (temp_theta3 >= 180)
 	temp_theta3 = temp_theta3 -360;
 elseif (temp_theta3 <= -180)
