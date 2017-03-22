@@ -32,7 +32,7 @@
 - We worked on the mathematics portion of the inverse kinematics (didn't finish)
 
 #### March 22, 2017
-- Now able to effectively calculate the new angles that are used with inverse kinematics
+- Team members met to finish calculations
 - Tasks accomplished
  - [x] Finished calculations (for the most part)
  - [x] Graphical user interface is finished, in addition to:
