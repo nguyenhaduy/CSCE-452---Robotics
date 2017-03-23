@@ -102,7 +102,7 @@ set(hObject,'WindowButtonMotionFcn','','WindowButtonDownFcn',@ClickDown)
     
     cla;
     xlim([-400 400])
-    ylim([0 400])
+    ylim([-400 400])
     hold on;
     update();
     
@@ -248,10 +248,10 @@ global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points continuous
 P1 = T0_1 * P0;
 P2 = T0_1 * T1_2 * P0;
 P3 = T0_1 * T1_2 * T2_3 * P0;
-P4 = T0_1 * T1_2 * T2_3 * T3_4 * P0
+P4 = T0_1 * T1_2 * T2_3 * T3_4 * P0;
 
 cla;
-rectangle('Position',[-15,0,30,10],'FaceColor', 'y');
+rectangle('Position',[-15,-15,30,30],'FaceColor', 'y');
 draw_arms;
 if length(points) ~= 0
     plot(points(1,:), points(2,:), '.','markersize',10,'Color','k');
@@ -327,7 +327,7 @@ end
 x2 = x - l3*sind(gamma);
 y2 = y - l3*cosd(gamma);
 
-if (-50<=x)&&(x<=50)&&(25<=y)&&(y<=125)
+if ((-50<=x)&&(x<=50)&&(25<=y)&&(y<=125))||((-50<=x)&&(x<=50)&&(-125<=y)&&(y<=-25))
      disp('Out of Range')
      return
 end
@@ -346,8 +346,16 @@ phi = atan2(k2,k1);
 
 temp_theta2 = -atan2d(s_theta_2,c_theta_2);
 temp_theta1 = -real(atan2d(x2,y2) - acosd((x2^2 + y2^2 + l1^2 - l2^2)/(2*l1*sqrt(x2^2 + y2^2))));
-temp_theta3 = -(gamma - (-temp_theta1 - temp_theta2));
+temp_theta3 = -(gamma - (-temp_theta1 - temp_theta2))
+temp_theta1 = mod(temp_theta1,360)
+temp_theta2 = mod(temp_theta2,360)
 temp_theta3 = mod(temp_theta3,360)
+% temp_theta3 = mod(temp_theta3,360);
+% if (temp_theta3 >= 180)
+% 	temp_theta3 = temp_theta3 -360;
+% elseif (temp_theta3 <= -180)
+% 	temp_theta3 = temp_theta3 + 360;
+% end
 
 % if (temp_theta3 >= 180)
 % 	temp_theta3 = temp_theta3 -180
@@ -373,13 +381,13 @@ while ((abs(theta1 - temp_theta1) > step1)||(abs(theta2 - temp_theta2) > step2)|
     if (abs(theta1 - temp_theta1) > step1)
         if (theta1 <= temp_theta1)
             theta1 = theta1 + step1;
-            if (theta1 >= 180)
-                theta1 = -180;
+            if (theta1 >= 360)
+                theta1 = 0;
             end
         else
             theta1 = theta1 - step1;
-            if (theta1 <= -180)
-                theta1 = 180;
+            if (theta1 <= -360)
+                theta1 = 0;
             end
         end
     end  
@@ -387,13 +395,13 @@ while ((abs(theta1 - temp_theta1) > step1)||(abs(theta2 - temp_theta2) > step2)|
     if abs(theta2 - temp_theta2) > step2
         if (theta2 <= temp_theta2)
             theta2 = theta2 + step2;
-            if (theta2 >= 180)
-                theta2 = -180;
+            if (theta2 >= 360)
+                theta2 = 0;
             end
         else
             theta2 = theta2 - step2;
-            if (theta2 <= -180)
-                theta2 = 180;
+            if (theta2 <= -360)
+                theta2 = 0;
             end
         end
     end
@@ -402,12 +410,12 @@ while ((abs(theta1 - temp_theta1) > step1)||(abs(theta2 - temp_theta2) > step2)|
         if (theta3 <= temp_theta3)
             theta3 = theta3 + step3;
             if (theta3 >= 360)
-                theta3 = -360;
+                theta3 = 0;
             end
         else
             theta3 = theta3 - step3;
             if (theta3 <= -360)
-                theta3 = 360;
+                theta3 = 0;
             end
         end
     end
