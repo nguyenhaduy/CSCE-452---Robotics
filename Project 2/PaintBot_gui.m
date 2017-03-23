@@ -318,8 +318,10 @@ l1 = 150;
 l2 = 100;
 l3 = 75;
 
-if ((x^2 + y^2) < 125^2)
+if ((x^2 + y^2) < 125^2)&&(y>0)&&(x>0)
     gamma = 0
+elseif ((x^2 + y^2) < 125^2)&&(y<0)
+    gamma = 180
 else
     gamma = atan2d(x,y)
 end
@@ -378,11 +380,33 @@ else
     speed = 1;
 end
 
-% speed = 1;
-
 step1 = abs(theta1 - temp_theta1)/speed;
 step2 = abs(theta2 - temp_theta2)/speed;
 step3 = abs(theta3 - temp_theta3)/speed;
+
+% if (abs(theta1 - temp_theta1) > 60)
+%     step1 = abs(theta1 - temp_theta1)/20;
+% elseif (abs(theta1 - temp_theta1) > 30)
+%     step1 = abs(theta1 - temp_theta1)/10;
+% else
+%     step1 = abs(theta1 - temp_theta1);
+% end
+% 
+% if (abs(theta2 - temp_theta2) > 60)
+%     step2 = abs(theta2 - temp_theta2)/20;
+% elseif (abs(theta2 - temp_theta2) > 30)
+%     step2 = abs(theta2 - temp_theta2)/10;
+% else
+%     step2 = abs(theta2 - temp_theta2);
+% end
+% 
+% if (abs(theta2 - temp_theta3) > 60)
+%     step3 = abs(theta3 - temp_theta3)/20;
+% elseif (abs(theta3 - temp_theta3) > 30)
+%     step3 = abs(theta3 - temp_theta3)/10;
+% else
+%     step3 = abs(theta3 - temp_theta3);
+% end
 
 while ((abs(theta1 - temp_theta1) > step1)||(abs(theta2 - temp_theta2) > step2)||(abs(theta3 - temp_theta3) > step3))
     if (abs(theta1 - temp_theta1) > step1)
@@ -431,7 +455,7 @@ while ((abs(theta1 - temp_theta1) > step1)||(abs(theta2 - temp_theta2) > step2)|
     T1_2 = T_matrix(theta2, T1_2);
     T0_1 = T_matrix(theta1, T0_1);
     update();
-    drawnow
+    drawnow nocallbacks
 end
 
 theta1 = temp_theta1;
@@ -443,57 +467,6 @@ T1_2 = T_matrix(theta2, T1_2);
 T0_1 = T_matrix(theta1, T0_1);
 
 update();
-
-function inverseKine2(xGoal,yGoal)
-% Input is the polar coordinates of end effector's position.
-%
-% In order to use this function, you'll need to convert the end
-% effector's position to spherical coordinates. All you'll need
-% is r (distance from origin to point and azimuth (angular direction).
-% These can be calculated as such: r = sqrt(x^2+y^2) and azimuth = atan2(y,x).
-%
-% --- Executes on button press in ContinuousPaint.
-
-global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points;
-
-ycurrent = P4(2); %Not using this  
-xcurrent = P4(1); %Starting position (x)   
-xchange = xcurrent - xGoal %Current distance from goal
-ychange = ycurrent - yGoal
-%Length of segment 1: 0.37, segment 2:0.374, segment 3:0.2295 
-
-l1 = 150;
-l2 = 100;
-l3 = 75;
-
-while ((xchange > 1 || xchange < -1) || (ychange < -1 || ychange > 1))    
-        in1 = l1*cos(theta1); %These equations are stated in the link provided
-        in2 = l2*cos(theta1+theta2);
-        in3 = l3*cos(theta1+theta2+theta3);
-        in4 = -l1*sin(theta1);
-        in5 = -l2*sin(theta1+theta2); 
-        in6 = -l3*sin(theta1+theta2+theta3); 
-        jacob = [in1+in2+in3, in2+in3, in3; in4+in5+in6, in5+in6, in6; 1,1,1];
-        invJacob = inv(jacob); 
-        xcurrent = (l1+2) * sin(theta1) + l2 * sin(theta1+theta2) + (l3+2) * sin(theta1+theta2+theta3) 
-        ycurrent = (l1+2) * cos(theta1) + l2 * cos(theta1+theta2) + (l3+2) * cos(theta1+theta2+theta3)        
-        xIncrement = (xGoal - xcurrent)/100; 
-        yIncrement = (yGoal - ycurrent)/100; 
-        increMatrix = [xcurrent; ycurrent; 1]; %dx/dz/phi 
-        change = invJacob * increMatrix; %dtheta1/dtheta2/dtheta3  
-        theta1 = theta1 + change(1)  
-        theta2 = theta2 + change(2)  
-        theta3 = theta3 + change(3)
-        xcurrent = (l1+2) * sin(theta1) + l2 * sin(theta1+theta2) + (l3+2) * sin(theta1+theta2+theta3)  
-        ycurrent = (l1+2) * cos(theta1) + l2 * cos(theta1+theta2) + (l3+2) * cos(theta1+theta2+theta3)          
-        xchange = xcurrent - xGoal
-        ychange = ycurrent - yGoal
-        T2_3 = T_matrix(theta3, T2_3);
-        T1_2 = T_matrix(theta2, T1_2);
-        T0_1 = T_matrix(theta1, T0_1);
-        update();
-        drawnow
-end
 
 function ContinuousPaint_Callback(hObject, eventdata, handles)
 % hObject    handle to ContinuousPaint (see GCBO)
