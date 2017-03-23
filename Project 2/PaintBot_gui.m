@@ -350,18 +350,25 @@ temp_theta3 = -(gamma - (-temp_theta1 - temp_theta2))
 temp_theta1 = mod(temp_theta1,360)
 temp_theta2 = mod(temp_theta2,360)
 temp_theta3 = mod(temp_theta3,360)
-% temp_theta3 = mod(temp_theta3,360);
-% if (temp_theta3 >= 180)
-% 	temp_theta3 = temp_theta3 -360;
-% elseif (temp_theta3 <= -180)
-% 	temp_theta3 = temp_theta3 + 360;
-% end
 
-% if (temp_theta3 >= 180)
-% 	temp_theta3 = temp_theta3 -180
-% elseif (temp_theta3 <= -180)
-% 	temp_theta3 = temp_theta3 + 180
-% end
+if (temp_theta1 >= 180)
+	temp_theta1 = temp_theta1 - 360;
+elseif (temp_theta3 <= -180)
+	temp_theta1 = temp_theta1 + 360;
+end
+
+if (temp_theta2 >= 180)
+	temp_theta2 = temp_theta2 - 360;
+elseif (temp_theta2 <= -180)
+	temp_theta2 = temp_theta2 + 360;
+end
+
+
+if (temp_theta3 >= 180)
+	temp_theta3 = temp_theta3 - 360;
+elseif (temp_theta3 <= -180)
+	temp_theta3 = temp_theta3 + 360;
+end
 
 if (abs(theta1 - temp_theta1) > 60)||(abs(theta2 - temp_theta2) > 60)||(abs(theta3 - temp_theta3) > 60)
     speed = 20;
@@ -379,43 +386,43 @@ step3 = abs(theta3 - temp_theta3)/speed;
 
 while ((abs(theta1 - temp_theta1) > step1)||(abs(theta2 - temp_theta2) > step2)||(abs(theta3 - temp_theta3) > step3))
     if (abs(theta1 - temp_theta1) > step1)
-        if (theta1 <= temp_theta1)
+        if (sind(theta1 - temp_theta1) <= 0)
             theta1 = theta1 + step1;
-            if (theta1 >= 360)
-                theta1 = 0;
+            if (theta1 >= 180)
+                theta1 = theta1 - 360;
             end
         else
             theta1 = theta1 - step1;
-            if (theta1 <= -360)
-                theta1 = 0;
+            if (theta1 <= -180)
+                theta1 = theta1 + 360;
             end
         end
     end  
     
     if abs(theta2 - temp_theta2) > step2
-        if (theta2 <= temp_theta2)
+        if (sind(theta2 - temp_theta2) <= 0)
             theta2 = theta2 + step2;
-            if (theta2 >= 360)
-                theta2 = 0;
+            if (theta2 >= 180)
+                theta2 = theta2 - 360;
             end
         else
             theta2 = theta2 - step2;
-            if (theta2 <= -360)
-                theta2 = 0;
+            if (theta2 <= -180)
+                theta2 = theta2 + 360;
             end
         end
     end
     
     if abs(theta3 - temp_theta3) > step3
-        if (theta3 <= temp_theta3)
+        if (sind(theta3 - temp_theta3) <= 0)
             theta3 = theta3 + step3;
-            if (theta3 >= 360)
-                theta3 = 0;
+            if (theta3 >= 180)
+                theta3 = theta3 - 360;
             end
         else
             theta3 = theta3 - step3;
-            if (theta3 <= -360)
-                theta3 = 0;
+            if (theta3 <= -180)
+                theta3 = theta3 + 360;
             end
         end
     end
