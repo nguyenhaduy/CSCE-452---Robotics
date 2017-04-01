@@ -61,7 +61,7 @@ function PaintBot_gui_OpeningFcn(hObject, eventdata, handles, varargin)
 
     
 %axis off;
-    global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points continuousDraw t;
+    global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points continuousDraw t Connection;
     continuousDraw = 0;
     T0_1 = [1 0 0 0; 0 1 0 0; 0 0 1 0; 0 0 0 1];
     T1_2 = [1 0 0 0; 0 1 0 150; 0 0 1 0; 0 0 0 1];
@@ -82,13 +82,11 @@ function PaintBot_gui_OpeningFcn(hObject, eventdata, handles, varargin)
     ylim([-400 400])
     hold on;
     update();
-    t = tcpip('127.0.0.1',4013);
-    fopen(t);
     
+    Connection = false;
+        
     set(gca, 'box','off','XTickLabel',[],'XTick',[],'YTickLabel',[],'YTick',[])
-    while true
-        DataReceived=fscanf(t,'%s')
-    end
+    
     
 % axis([-400 400 0 400])
 
@@ -470,6 +468,17 @@ function connect_Callback(hObject, eventdata, handles)
 % hObject    handle to connect (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+global Connection
+Connection = true;
+t = tcpip('127.0.0.1',4013);
+fopen(t);
+pause(0.2);
+
+t.Terminator = ' ';
+    
+while Connection
+        DataReceived=fscanf(t,'%c')
+end
 
 
 % --- Executes on button press in disconnect. 
@@ -477,3 +486,7 @@ function disconnect_Callback(hObject, eventdata, handles)
 % hObject    handle to disconnect (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+global Connection
+Connection = false;
+fclose(t);
+delete(t);
