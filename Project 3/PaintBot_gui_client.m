@@ -87,7 +87,7 @@ function PaintBot_gui_OpeningFcn(hObject, eventdata, handles, varargin)
     
     set(gca, 'box','off','XTickLabel',[],'XTick',[],'YTickLabel',[],'YTick',[])
     while true
-        DataReceived=fread(t,10)
+        DataReceived=fscanf(t,'%s')
     end
     
 % axis([-400 400 0 400])
