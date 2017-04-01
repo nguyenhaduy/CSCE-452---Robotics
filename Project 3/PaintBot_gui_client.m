@@ -22,7 +22,7 @@ function varargout = PaintBot_gui(varargin)
 
 % Edit the above text to modify the response to help PaintBot_gui
 
-% Last Modified by GUIDE v2.5 01-Apr-2017 16:04:08
+% Last Modified by GUIDE v2.5 01-Apr-2017 16:14:26
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -43,27 +43,6 @@ else
 end
 % End initialization code - DO NOT EDIT
 
-function OperateOnKeyPress(hObject, evt)
-global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points;
-if strcmp(evt.Key,'leftarrow')
-    inverseKine(P4(1)-5, P4(2));
-elseif strcmp(evt.Key,'rightarrow')
-    inverseKine(P4(1)+5, P4(2));
-elseif strcmp(evt.Key,'downarrow')
-    inverseKine(P4(1), P4(2)-5);
-elseif strcmp(evt.Key,'uparrow')
-    inverseKine(P4(1), P4(2)+5);
-elseif strcmp(evt.Key,'space')
-    points = [points, P4];
-    update();
-end
-disp(evt.Key)
-
-% When click-down occurs, enable the mouse motion detecting callback
-function ClickDown(varargin)
-    [x, y] = ginput(1)
-    inverseKine(x, y);
-    
 
 % --- Executes just before PaintBot_gui is made visible.
 function PaintBot_gui_OpeningFcn(hObject, eventdata, handles, varargin)
@@ -80,8 +59,6 @@ function PaintBot_gui_OpeningFcn(hObject, eventdata, handles, varargin)
 % Update handles structure
     guidata(hObject, handles);
 
-set(hObject,'KeyPressFcn',@OperateOnKeyPress)
-set(hObject,'WindowButtonMotionFcn','','WindowButtonDownFcn',@ClickDown)
     
 %axis off;
     global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points continuousDraw;
@@ -384,80 +361,6 @@ step1 = abs(theta1 - temp_theta1)/speed;
 step2 = abs(theta2 - temp_theta2)/speed;
 step3 = abs(theta3 - temp_theta3)/speed;
 
-% if (abs(theta1 - temp_theta1) > 60)
-%     step1 = abs(theta1 - temp_theta1)/20;
-% elseif (abs(theta1 - temp_theta1) > 30)
-%     step1 = abs(theta1 - temp_theta1)/10;
-% else
-%     step1 = abs(theta1 - temp_theta1);
-% end
-% 
-% if (abs(theta2 - temp_theta2) > 60)
-%     step2 = abs(theta2 - temp_theta2)/20;
-% elseif (abs(theta2 - temp_theta2) > 30)
-%     step2 = abs(theta2 - temp_theta2)/10;
-% else
-%     step2 = abs(theta2 - temp_theta2);
-% end
-% 
-% if (abs(theta2 - temp_theta3) > 60)
-%     step3 = abs(theta3 - temp_theta3)/20;
-% elseif (abs(theta3 - temp_theta3) > 30)
-%     step3 = abs(theta3 - temp_theta3)/10;
-% else
-%     step3 = abs(theta3 - temp_theta3);
-% end
-
-% while ((abs(theta1 - temp_theta1) > step1)||(abs(theta2 - temp_theta2) > step2)||(abs(theta3 - temp_theta3) > step3))
-%     if (abs(theta1 - temp_theta1) > step1)
-%         if (sind(theta1 - temp_theta1) <= 0)
-%             theta1 = theta1 + step1;
-%             if (theta1 >= 180)
-%                 theta1 = theta1 - 360;
-%             end
-%         else
-%             theta1 = theta1 - step1;
-%             if (theta1 <= -180)
-%                 theta1 = theta1 + 360;
-%             end
-%         end
-%     end  
-%     
-%     if abs(theta2 - temp_theta2) > step2
-%         if (sind(theta2 - temp_theta2) <= 0)
-%             theta2 = theta2 + step2;
-%             if (theta2 >= 180)
-%                 theta2 = theta2 - 360;
-%             end
-%         else
-%             theta2 = theta2 - step2;
-%             if (theta2 <= -180)
-%                 theta2 = theta2 + 360;
-%             end
-%         end
-%     end
-%     
-%     if abs(theta3 - temp_theta3) > step3
-%         if (sind(theta3 - temp_theta3) <= 0)
-%             theta3 = theta3 + step3;
-%             if (theta3 >= 180)
-%                 theta3 = theta3 - 360;
-%             end
-%         else
-%             theta3 = theta3 - step3;
-%             if (theta3 <= -180)
-%                 theta3 = theta3 + 360;
-%             end
-%         end
-%     end
-% 
-%     T2_3 = T_matrix(theta3, T2_3);
-%     T1_2 = T_matrix(theta2, T1_2);
-%     T0_1 = T_matrix(theta1, T0_1);
-%     update();
-%     drawnow
-% end
-
 theta1 = temp_theta1;
 theta2 = temp_theta2;
 theta3 = temp_theta3;
@@ -475,18 +378,97 @@ function ContinuousPaint_Callback(hObject, eventdata, handles)
 global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points continuousDraw;
 continuousDraw = ~continuousDraw;
 
+function message = client(host, port, number_of_retries)
 
-% --- Executes on button press in radiobutton1.
-function radiobutton1_Callback(hObject, eventdata, handles)
-% hObject    handle to radiobutton1 (see GCBO)
+    import java.net.Socket
+    import java.io.*
+
+    if (nargin < 3)
+        number_of_retries = 20; % set to -1 for infinite
+    end
+    
+    retry        = 0;
+    input_socket = [];
+    message      = [];
+
+    while true
+
+        retry = retry + 1;
+        if ((number_of_retries > 0) && (retry > number_of_retries))
+            fprintf(1, 'Too many retries\n');
+            break;
+        end
+        
+        try
+            fprintf(1, 'Retry %d connecting to %s:%d\n', ...
+                    retry, host, port);
+
+            % throws if unable to connect
+            input_socket = Socket(host, port);
+
+            % get a buffered data input stream from the socket
+            input_stream   = input_socket.getInputStream;
+            d_input_stream = DataInputStream(input_stream);
+
+            fprintf(1, 'Connected to server\n');
+
+            % read data from the socket - wait a short time first
+            pause(0.5);
+            bytes_available = input_stream.available;
+            fprintf(1, 'Reading %d bytes\n', bytes_available);
+            
+            message = zeros(1, bytes_available, 'uint8');
+            for i = 1:bytes_available
+                message(i) = d_input_stream.readByte;
+            end
+            
+            message = char(message);
+            
+            % cleanup
+            input_socket.close;
+            break;
+            
+        catch
+            if ~isempty(input_socket)
+                input_socket.close;
+            end
+
+            % pause before retrying
+            pause(1);
+        end
+    end
+
+function serverName_Callback(hObject, eventdata, handles) %insert server name
+% hObject    handle to serverName (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of radiobutton1
+% Hints: get(hObject,'String') returns contents of serverName as text
+%        str2double(get(hObject,'String')) returns contents of serverName as a double
 
 
-% --- Executes on button press in pushbutton15.
-function pushbutton15_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton15 (see GCBO)
+% --- Executes during object creation, after setting all properties.
+function serverName_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to serverName (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in connect. 
+function connect_Callback(hObject, eventdata, handles)
+% hObject    handle to connect (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in disconnect. 
+function disconnect_Callback(hObject, eventdata, handles)
+% hObject    handle to disconnect (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
