@@ -22,7 +22,7 @@ function varargout = PaintBot_gui(varargin)
 
 % Edit the above text to modify the response to help PaintBot_gui
 
-% Last Modified by GUIDE v2.5 01-Apr-2017 16:04:08
+% Last Modified by GUIDE v2.5 01-Apr-2017 16:42:31
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -77,6 +77,7 @@ function PaintBot_gui_OpeningFcn(hObject, eventdata, handles, varargin)
     handles.output = hObject;
     handles.points = [];
 
+    
 % Update handles structure
     guidata(hObject, handles);
 
@@ -84,8 +85,9 @@ set(hObject,'KeyPressFcn',@OperateOnKeyPress)
 set(hObject,'WindowButtonMotionFcn','','WindowButtonDownFcn',@ClickDown)
     
 %axis off;
-    global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points continuousDraw;
+    global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points continuousDraw t check;
     continuousDraw = 0;
+    check = 0;
     T0_1 = [1 0 0 0; 0 1 0 0; 0 0 1 0; 0 0 0 1];
     T1_2 = [1 0 0 0; 0 1 0 150; 0 0 1 0; 0 0 0 1];
     T2_3 = [1 0 0 0; 0 1 0 100; 0 0 1 0; 0 0 0 1];
@@ -105,6 +107,8 @@ set(hObject,'WindowButtonMotionFcn','','WindowButtonDownFcn',@ClickDown)
     ylim([-400 400])
     hold on;
     update();
+    
+    t = tcpip('127.0.0.1', 4013,'NetworkRole','server');
     
     set(gca, 'box','off','XTickLabel',[],'XTick',[],'YTickLabel',[],'YTick',[])
     
@@ -270,9 +274,12 @@ function UpButton_Callback(hObject, eventdata, handles)
 % hObject    handle to UpButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points;
+global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points t check;
 disp('Up')
 inverseKine(P4(1), P4(2)+5);
+if(check)
+    fwrite(t,'UP');
+end
 
 
 % --- Executes on button press in RightButton.
@@ -280,18 +287,24 @@ function RightButton_Callback(hObject, eventdata, handles)
 % hObject    handle to RightButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points;
+global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points t check;
 disp('Right')
 inverseKine(P4(1)+5, P4(2));
+if(check)
+    fwrite(t,'RIGHT');
+end
 
 % --- Executes on button press in LeftButton.
 function LeftButton_Callback(hObject, eventdata, handles)
 % hObject    handle to LeftButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points;
+global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points t check;
 disp('Left')
 inverseKine(P4(1)-5, P4(2));
+if(check)
+    fwrite(t,'LEFT');
+end
 
 
 % --- Executes on button press in DownButton.
@@ -299,10 +312,12 @@ function DownButton_Callback(hObject, eventdata, handles)
 % hObject    handle to DownButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points;
+global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points t check;
 disp('Down')
 inverseKine(P4(1), P4(2)-5);
-
+if(check)
+    fwrite(t,'DOWN');
+end
 % Link angle calculation
 function inverseKine(x,y)
 % Input is the polar coordinates of end effector's position.
@@ -384,80 +399,6 @@ step1 = abs(theta1 - temp_theta1)/speed;
 step2 = abs(theta2 - temp_theta2)/speed;
 step3 = abs(theta3 - temp_theta3)/speed;
 
-% if (abs(theta1 - temp_theta1) > 60)
-%     step1 = abs(theta1 - temp_theta1)/20;
-% elseif (abs(theta1 - temp_theta1) > 30)
-%     step1 = abs(theta1 - temp_theta1)/10;
-% else
-%     step1 = abs(theta1 - temp_theta1);
-% end
-% 
-% if (abs(theta2 - temp_theta2) > 60)
-%     step2 = abs(theta2 - temp_theta2)/20;
-% elseif (abs(theta2 - temp_theta2) > 30)
-%     step2 = abs(theta2 - temp_theta2)/10;
-% else
-%     step2 = abs(theta2 - temp_theta2);
-% end
-% 
-% if (abs(theta2 - temp_theta3) > 60)
-%     step3 = abs(theta3 - temp_theta3)/20;
-% elseif (abs(theta3 - temp_theta3) > 30)
-%     step3 = abs(theta3 - temp_theta3)/10;
-% else
-%     step3 = abs(theta3 - temp_theta3);
-% end
-
-% while ((abs(theta1 - temp_theta1) > step1)||(abs(theta2 - temp_theta2) > step2)||(abs(theta3 - temp_theta3) > step3))
-%     if (abs(theta1 - temp_theta1) > step1)
-%         if (sind(theta1 - temp_theta1) <= 0)
-%             theta1 = theta1 + step1;
-%             if (theta1 >= 180)
-%                 theta1 = theta1 - 360;
-%             end
-%         else
-%             theta1 = theta1 - step1;
-%             if (theta1 <= -180)
-%                 theta1 = theta1 + 360;
-%             end
-%         end
-%     end  
-%     
-%     if abs(theta2 - temp_theta2) > step2
-%         if (sind(theta2 - temp_theta2) <= 0)
-%             theta2 = theta2 + step2;
-%             if (theta2 >= 180)
-%                 theta2 = theta2 - 360;
-%             end
-%         else
-%             theta2 = theta2 - step2;
-%             if (theta2 <= -180)
-%                 theta2 = theta2 + 360;
-%             end
-%         end
-%     end
-%     
-%     if abs(theta3 - temp_theta3) > step3
-%         if (sind(theta3 - temp_theta3) <= 0)
-%             theta3 = theta3 + step3;
-%             if (theta3 >= 180)
-%                 theta3 = theta3 - 360;
-%             end
-%         else
-%             theta3 = theta3 - step3;
-%             if (theta3 <= -180)
-%                 theta3 = theta3 + 360;
-%             end
-%         end
-%     end
-% 
-%     T2_3 = T_matrix(theta3, T2_3);
-%     T1_2 = T_matrix(theta2, T1_2);
-%     T0_1 = T_matrix(theta1, T0_1);
-%     update();
-%     drawnow
-% end
-
 theta1 = temp_theta1;
 theta2 = temp_theta2;
 theta3 = temp_theta3;
@@ -476,17 +417,29 @@ global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points continuous
 continuousDraw = ~continuousDraw;
 
 
-% --- Executes on button press in radiobutton1.
-function radiobutton1_Callback(hObject, eventdata, handles)
-% hObject    handle to radiobutton1 (see GCBO)
+% --- Executes on button press in delay.
+function delay_Callback(hObject, eventdata, handles)
+% hObject    handle to delay (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of radiobutton1
+% Hint: get(hObject,'Value') returns toggle state of delay
 
 
-% --- Executes on button press in pushbutton15.
-function pushbutton15_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton15 (see GCBO)
+% --- Executes on button press in closeSocket.
+function closeSocket_Callback(hObject, eventdata, handles)
+% hObject    handle to closeSocket (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+% --- Executes on button press in openSocket.
+function openSocket_Callback(hObject, eventdata, handles)
+% hObject    handle to openSocket (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+    % Wait for connection
+    global t check;
+    disp('Waiting for connection');
+    fopen(t);
+    check = 1;
+    disp('Connection OK');            
