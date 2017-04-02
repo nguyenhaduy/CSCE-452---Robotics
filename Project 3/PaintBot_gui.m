@@ -278,7 +278,7 @@ global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points t check;
 disp('Up')
 inverseKine(P4(1), P4(2)+5);
 if(check)
-    fwrite(t,'UP');
+    fwrite(t,'UP ');
 end
 
 
@@ -291,7 +291,7 @@ global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points t check;
 disp('Right')
 inverseKine(P4(1)+5, P4(2));
 if(check)
-    fwrite(t,'RIGHT');
+    fwrite(t,'RIGHT ');
 end
 
 % --- Executes on button press in LeftButton.
@@ -303,7 +303,7 @@ global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points t check;
 disp('Left')
 inverseKine(P4(1)-5, P4(2));
 if(check)
-    fwrite(t,'LEFT');
+    fwrite(t,'LEFT ');
 end
 
 
@@ -316,7 +316,7 @@ global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points t check;
 disp('Down')
 inverseKine(P4(1), P4(2)-5);
 if(check)
-    fwrite(t,'DOWN');
+    fwrite(t,'DOWN ');
 end
 % Link angle calculation
 function inverseKine(x,y)
