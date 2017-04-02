@@ -478,6 +478,19 @@ t.Terminator = ' ';
     
 while Connection
         DataReceived=fscanf(t,'%c')
+        if (strcmpi(DataReceived, 'DOWN '))
+            % Call down callback function
+            
+        elseif (strcmpi(DataReceived, 'UP '))
+            % Call up callback function
+            
+        elseif (strcmpi(DataReceived, 'LEFT '))
+            % Call left callback function
+            
+        elseif (strcmpi(DataReceived, 'RIGHT '))
+            % Call right callback function
+            
+        end
 end
 
 
