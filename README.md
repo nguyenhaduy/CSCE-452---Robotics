@@ -38,3 +38,10 @@
  - [x] Graphical user interface is finished, in addition to:
   - [x] Being able to go to any reachable point by clicking on the area
   - [x] Continuous painting so we don't need to press the Paint button each time
+
+---
+### Project 3 Log
+#### April 1, 2017
+- Met to implement socket functionality
+- Worked on Client/Server relationships
+- Updated GUI for both the Client and Server
