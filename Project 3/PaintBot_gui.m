@@ -44,25 +44,40 @@ end
 % End initialization code - DO NOT EDIT
 
 function OperateOnKeyPress(hObject, evt)
-global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points;
+global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points check t;
 if strcmp(evt.Key,'leftarrow')
     inverseKine(P4(1)-5, P4(2));
+    if(check)
+    fwrite(t,'LEFT ');
+    end
 elseif strcmp(evt.Key,'rightarrow')
     inverseKine(P4(1)+5, P4(2));
+    if(check)
+    fwrite(t,'RIGHT ');
+    end
 elseif strcmp(evt.Key,'downarrow')
     inverseKine(P4(1), P4(2)-5);
+    if(check)
+    fwrite(t,'DOWN ');
+    end
 elseif strcmp(evt.Key,'uparrow')
     inverseKine(P4(1), P4(2)+5);
+    if(check)
+    fwrite(t,'UP ');
+    end
 elseif strcmp(evt.Key,'space')
     points = [points, P4];
     update();
+    if(check)
+    fwrite(t,'PAINT ');
+    end
 end
 disp(evt.Key)
 
 % When click-down occurs, enable the mouse motion detecting callback
-function ClickDown(varargin)
-    [x, y] = ginput(1)
-    inverseKine(x, y);
+% function ClickDown(varargin)
+%     [x, y] = ginput(1)
+%     inverseKine(x, y);
     
 
 % --- Executes just before PaintBot_gui is made visible.
@@ -82,7 +97,7 @@ function PaintBot_gui_OpeningFcn(hObject, eventdata, handles, varargin)
     guidata(hObject, handles);
 
 set(hObject,'KeyPressFcn',@OperateOnKeyPress)
-set(hObject,'WindowButtonMotionFcn','','WindowButtonDownFcn',@ClickDown)
+% set(hObject,'WindowButtonMotionFcn','','WindowButtonDownFcn',@ClickDown)
     
 %axis off;
     global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points continuousDraw t check;
@@ -108,7 +123,7 @@ set(hObject,'WindowButtonMotionFcn','','WindowButtonDownFcn',@ClickDown)
     hold on;
     update();
     
-    t = tcpip('127.0.0.1', 4013,'NetworkRole','server');
+    t = tcpip('0.0.0.0', 4013,'NetworkRole','server');
     
     set(gca, 'box','off','XTickLabel',[],'XTick',[],'YTickLabel',[],'YTick',[])
     
@@ -134,20 +149,26 @@ function Counter1_Callback(hObject, eventdata, handles) %Counter-Clockwise Joint
 % hObject    handle to Counter1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global T0_1 T1_2 T2_3 T3_4 P1 P2 P3 P4 theta1 theta2 theta3;
+global T0_1 T1_2 T2_3 T3_4 P1 P2 P3 P4 theta1 theta2 theta3 t check;
 theta1 = theta1 + 2
 T0_1 = T_matrix(theta1, T0_1);
 update();
+if(check)
+    fwrite(t,'COUNTER1 ');
+end
 
 % --- Executes on button press in Clock1.
 function Clock1_Callback(hObject, eventdata, handles) %Clockwise Joint 1
 % hObject    handle to Clock1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3;
+global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 t check;
 theta1 = theta1 - 2
 T0_1 = T_matrix(theta1, T0_1);
 update();
+if(check)
+    fwrite(t,'CLOCK1 ');
+end
 
 
 
@@ -156,10 +177,13 @@ function Counter2_Callback(hObject, eventdata, handles) %Counter-Clockwise Joint
 % hObject    handle to Counter2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3;
+global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 t check;
 theta2 = theta2 + 2;
 T1_2 = T_matrix(theta2, T1_2);
 update();
+if(check)
+    fwrite(t,'COUNTER2 ');
+end
 
 
 % --- Executes on button press in Clock2.
@@ -167,20 +191,26 @@ function Clock2_Callback(hObject, eventdata, handles) %Counter-Clockwise Joint 2
 % hObject    handle to Clock2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3;
+global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 t check;
 theta2 = theta2 - 2;
 T1_2 = T_matrix(theta2, T1_2);
 update();
+if(check)
+    fwrite(t,'CLOCK2 ');
+end
 
 % --- Executes on button press in Counter3.
 function Counter3_Callback(hObject, eventdata, handles)
 % hObject    handle to Counter3 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3;
+global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 t check;
 theta3 = theta3 + 2;
 T2_3 = T_matrix(theta3, T2_3);
 update();
+if(check)
+    fwrite(t,'COUNTER3 ');
+end
 
 
 % --- Executes on button press in Clock3.
@@ -188,19 +218,25 @@ function Clock3_Callback(hObject, eventdata, handles)
 % hObject    handle to Clock3 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3;
+global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 t check;
 theta3 = theta3 - 2;
 T2_3 = T_matrix(theta3, T2_3);
 update();
+if(check)
+    fwrite(t,'CLOCK3 ');
+end
 
 % --- Executes on button press in Paint.
 function Paint_Callback(hObject, eventdata, handles) %Paint
 % hObject    handle to Paint (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global P4 points
+global P4 points t check;
 points = [points, P4];
 update();
+if(check)
+    fwrite(t,'PAINT ');
+end
     
 
 function A = draw_arms(number)
@@ -413,8 +449,11 @@ function ContinuousPaint_Callback(hObject, eventdata, handles)
 % hObject    handle to ContinuousPaint (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points continuousDraw;
+global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points continuousDraw check t;
 continuousDraw = ~continuousDraw;
+if(check)
+fwrite(t,'CONTINUOUS ');
+end
 
 
 % --- Executes on button press in delay.
@@ -422,8 +461,11 @@ function delay_Callback(hObject, eventdata, handles)
 % hObject    handle to delay (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
 % Hint: get(hObject,'Value') returns toggle state of delay
+global t check;
+if(check)
+    fwrite(t,'DELAY ');
+end
 
 
 % --- Executes on button press in closeSocket.
@@ -431,6 +473,11 @@ function closeSocket_Callback(hObject, eventdata, handles)
 % hObject    handle to closeSocket (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+global t check Connection;
+if(check)
+    fwrite(t,'DISCONNECT ');
+end
+
 
 % --- Executes on button press in openSocket.
 function openSocket_Callback(hObject, eventdata, handles)
