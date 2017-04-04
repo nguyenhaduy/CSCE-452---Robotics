@@ -22,7 +22,7 @@ function varargout = PaintBot_gui(varargin)
 
 % Edit the above text to modify the response to help PaintBot_gui
 
-% Last Modified by GUIDE v2.5 01-Apr-2017 16:42:31
+% Last Modified by GUIDE v2.5 03-Apr-2017 18:24:30
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -477,6 +477,9 @@ global t check Connection;
 if(check)
     fwrite(t,'DISCONNECT ');
 end
+check = 0;
+fclose(t);
+echotcpip('off')
 
 
 % --- Executes on button press in openSocket.
@@ -485,8 +488,25 @@ function openSocket_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
     % Wait for connection
-    global t check;
+    global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points continuousDraw t check;
     disp('Waiting for connection');
+    
+    continuousDraw = 0;
+    T0_1 = [1 0 0 0; 0 1 0 0; 0 0 1 0; 0 0 0 1];
+    T1_2 = [1 0 0 0; 0 1 0 150; 0 0 1 0; 0 0 0 1];
+    T2_3 = [1 0 0 0; 0 1 0 100; 0 0 1 0; 0 0 0 1];
+    T3_4 = [1 0 0 0; 0 1 0 75; 0 0 1 0; 0 0 0 1];
+    P0 = [0; 0; 0; 1];
+    P1 = [0; 0; 0; 1];
+    P2 = [0; 150; 0; 1];
+    P3 = [0; 250; 0; 1];
+    P4 = [0; 325; 0; 1];
+    theta1 = 0;
+    theta2 = 0;
+    theta3 = 0;
+    points = [];
+    update();
+    
     fopen(t);
     check = 1;
-    disp('Connection OK');            
+    disp('Connection OK');

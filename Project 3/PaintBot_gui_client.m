@@ -28,7 +28,8 @@ function PaintBot_gui_OpeningFcn(hObject, eventdata, handles, varargin)
 
     
 %axis off;
-    global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points continuousDraw Connection delay;
+    global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points continuousDraw Connection delay IPvalue;
+    IPvalue = '127.0.0.1';
     delay = false;
     Connection = false;
     continuousDraw = 0;
@@ -218,11 +219,29 @@ function connect_Callback(hObject, eventdata, handles)
 % hObject    handle to connect (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global T0_1 T1_2 T2_3 T3_4 P1 P2 P3 P4 theta1 theta2 theta3 Connection points continuousDraw delay;
+global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 Connection points continuousDraw delay IPvalue;
+IPvalue = handles.IPtext.String;
 Connection = true;
-t = tcpip('10.202.148.74',4013);
+t = tcpip(IPvalue,4013);
 fopen(t);
 pause(0.2);
+handles.status.String = 'Connected';
+
+delay = false;
+continuousDraw = 0;
+T0_1 = [1 0 0 0; 0 1 0 0; 0 0 1 0; 0 0 0 1];
+T1_2 = [1 0 0 0; 0 1 0 150; 0 0 1 0; 0 0 0 1];
+T2_3 = [1 0 0 0; 0 1 0 100; 0 0 1 0; 0 0 0 1];
+T3_4 = [1 0 0 0; 0 1 0 75; 0 0 1 0; 0 0 0 1];
+P0 = [0; 0; 0; 1];
+P1 = [0; 0; 0; 1];
+P2 = [0; 150; 0; 1];
+P3 = [0; 250; 0; 1];
+P4 = [0; 325; 0; 1];
+theta1 = 0;
+theta2 = 0;
+theta3 = 0;
+points = [];
 
 t.Terminator = ' ';
     
@@ -276,6 +295,7 @@ while Connection
             continuousDraw = ~continuousDraw;
         elseif (strcmpi(DataReceived, 'DISCONNECT '))
             Connection = false;
+            handles.status.String = 'Disconnected';
         elseif (strcmpi(DataReceived, 'DELAY '))
             delay = ~delay;
         end
