@@ -488,7 +488,13 @@ function openSocket_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
     % Wait for connection
+    
     global T0_1 T1_2 T2_3 T3_4 P0 P1 P2 P3 P4 theta1 theta2 theta3 points continuousDraw t check;
+    
+    if(check)
+        return
+    end
+    
     disp('Waiting for connection');
     
     continuousDraw = 0;
