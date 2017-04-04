@@ -298,6 +298,11 @@ while Connection
             handles.status.String = 'Disconnected';
         elseif (strcmpi(DataReceived, 'DELAY '))
             delay = ~delay;
+            if(delay)
+                handles.Delay.String = 'On';
+            else
+                handles.Delay.String = 'Off';
+            end
         end
         drawnow;
 end
