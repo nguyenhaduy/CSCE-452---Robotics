@@ -1,13 +1,11 @@
 var game = new Phaser.Game(800, 800, Phaser.CANVAS, null, {
-  preload: preload, create: create, update: update, render: render});
+  preload: preload, create: create});
+
+// , update: update, render: render
 
 var car;
 var cars;
-var light;
-var lights;
-
-var carInfo;
-var lightInfo;
+var Lights;
 
 
 // Sensor Object
@@ -15,11 +13,21 @@ Sensor = function(x, y, scale){
 
 	Phaser.Sprite.call(this, game, x, y, 'sensor');
 	this.anchor.setTo(0.5, 0.5);
-    // this.scale.setTo(scale, scale)
+	this.ScaleNumber = scale;
+    this.scale.setTo(scale, scale)
 	game.add.existing(this);
 }
 Sensor.prototype = Object.create(Phaser.Sprite.prototype);
 Sensor.prototype.constructor = Sensor;
+Sensor.prototype.rotateAbout = function(tempX, tempY, cx, cy, theta){
+
+	//apply rotation
+	rotatedX = tempX*Math.cos(theta) - tempY*Math.sin(theta);
+	rotatedY = tempX*Math.sin(theta) + tempY*Math.cos(theta);
+	// translate back
+	this.x = rotatedX + cx;
+	this.y = rotatedY + cy;
+}
 
 
 // Car Object
@@ -63,23 +71,28 @@ Car.prototype.update = function() {
 	// Calculate position of left sensor
 	tempX = -64*this.ScaleNumber;
 	tempY = -128*this.ScaleNumber;
-	//apply rotation
-	rotatedX = tempX*Math.cos(this.rotation) - tempY*Math.sin(this.rotation);
-	rotatedY = tempX*Math.sin(this.rotation) + tempY*Math.cos(this.rotation);
-	// translate back
-	this.leftSensor.x = rotatedX + this.x;
-	this.leftSensor.y = rotatedY + this.y;
+	this.leftSensor.rotateAbout(tempX, tempY, this.x, this.y, this.rotation);
 
 	// Calculate position of right sensor
 	tempX = 64*this.ScaleNumber;
 	tempY = -128*this.ScaleNumber;
-	//apply rotation
-	rotatedX = tempX*Math.cos(this.rotation) - tempY*Math.sin(this.rotation);
-	rotatedY = tempX*Math.sin(this.rotation) + tempY*Math.cos(this.rotation);
-	// translate back
-	this.rightSensor.x = rotatedX + this.x;
-	this.rightSensor.y = rotatedY + this.y;
+	this.rightSensor.rotateAbout(tempX, tempY, this.x, this.y, this.rotation);
+
+	//
+	// Lights.children[i].destroy();
 };
+Car.prototype.setWheelSpeed = function() {
+    s1 = 0.0;
+    s2 = 0.0;
+    
+    for (var i = 0; i < Lights.children.length; i++) { 
+    	s1 += Lights.children[i].intensityToLightSource(leftSensor);
+        s2 += Lights.children[i].intensityToLightSource(rightSensor);
+	}
+
+    this.rightSpeed = this.k11*s1 + this.k12*s2;
+    this.leftSpeed = this.k21*s1 + this.k22*s2;
+    }
 
 
 //Light Object
@@ -87,11 +100,15 @@ Light = function (game, x, y, scale) {
     Phaser.Sprite.call(this, game, x, y, 'light');
     this.anchor.setTo(0.5, 0.5);
     this.scale.setTo(scale, scale)
+    this.intensity = 100;
     game.add.existing(this);
 };
 Light.prototype = Object.create(Phaser.Sprite.prototype);
 Light.prototype.constructor = Light;
-Light.prototype.update = function() {};
+Light.prototype.intensityToLightSource = function(sensor) {
+	distance = Phaser.Math.distance(this.x, this.y, sensor.x, sensor.y);
+	return (this.intensity/distance);
+};
 
 
 
@@ -109,36 +126,40 @@ function create() {
 	game.world.setBounds(0,0,800,800);
 	game.physics.startSystem(Phaser.Physics.ARCADE);
 
- 	car = game.add.sprite(game.world.randomX, game.world.randomY,  'car');
-  	// Pick a random number between -2 and 6
-  	var rand = game.rnd.realInRange(-2, 6);
-  	// Set the scale of the sprite to the ramdom value
-  	car.scale.setTo(0.25, 0.25);
-  	car.anchor.setTo(0.5, 0.5);
+ 	// car = game.add.sprite(game.world.randomX, game.world.randomY,  'car');
+  // 	// Pick a random number between -2 and 6
+  // 	var rand = game.rnd.realInRange(-2, 6);
+  // 	// Set the scale of the sprite to the ramdom value
+  // 	car.scale.setTo(0.25, 0.25);
+  // 	car.anchor.setTo(0.5, 0.5);
 
-  	game.physics.enable(car, Phaser.Physics.ARCADE);
-  	car.body.drag.set(0.2);
-  	car.body.maxVelocity.setTo(200,200);
-    car.body.velocity.set(150, 100);
-    car.body.collideWorldBounds = true;
-    car.body.bounce.set(1);
+  // 	game.physics.enable(car, Phaser.Physics.ARCADE);
+  // 	car.body.drag.set(0.2);
+  // 	car.body.maxVelocity.setTo(200,200);
+  //   car.body.velocity.set(150, 100);
+  //   car.body.collideWorldBounds = true;
+  //   car.body.bounce.set(1);
 
-    sensor1 = game.add.sprite(-100, -100,  'sensor');
+    sensor1 = game.add.sprite(-200, -200,  'sensor');
 
   	new Car(game, game.world.randomX, game.world.randomX, 0.25, 0, 0, 0, 0, 0);
 
-  	new Light(game, game.world.randomX, game.world.randomX, 1);
+  	Lights = game.add.group();
+  	for(r=0; r<10; r++) {
+        newLight = new Light(game, game.world.randomX, game.world.randomX, 1);
+        Lights.add(newLight);
+    }
 }
 
 function update() {
-	car.rotation = Math.atan2(car.body.velocity.x, -car.body.velocity.y);  
-	car.body.width = 64;  
-	car.body.height =64;
+	// car.rotation = Math.atan2(car.body.velocity.x, -car.body.velocity.y);  
+	// car.body.width = 64;  
+	// car.body.height =64;
 
 }
 
 function render() {  
-	game.debug.body(car);
+	// game.debug.body(car);
 }
 
 function newCar(){
