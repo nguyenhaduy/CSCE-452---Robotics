@@ -9,6 +9,20 @@ var lights;
 var carInfo;
 var lightInfo;
 
+
+// Sensor Object
+Sensor = function(x, y, scale){
+
+	Phaser.Sprite.call(this, game, x, y, 'sensor');
+	this.anchor.setTo(0.5, 0.5);
+    // this.scale.setTo(scale, scale)
+	game.add.existing(this);
+}
+Sensor.prototype = Object.create(Phaser.Sprite.prototype);
+Sensor.prototype.constructor = Sensor;
+
+
+// Car Object
 Car = function (game, x, y, scale, K11, K12, K21, K22, rotation) {
 
     Phaser.Sprite.call(this, game, x, y, 'car');
@@ -18,10 +32,17 @@ Car = function (game, x, y, scale, K11, K12, K21, K22, rotation) {
     this.k21 = K21;
     this.k22 = K22;
 
+    this.rightSensor = new Sensor(x+64*scale, y-128*scale, scale);
+    this.leftSensor = new Sensor(x-64*scale, y-128*scale, scale);
+
+    this.rightSpeed = 0;
+    this.leftSpeed = 0;
+
     this.anchor.setTo(0.5, 0.5);
     this.rotation = rotation;
     this.size = 256*scale;
     this.scale.setTo(scale, scale)
+    this.ScaleNumber = scale;
 
     game.physics.enable(this, Phaser.Physics.ARCADE);
   	this.body.drag.set(0.2);
@@ -31,29 +52,48 @@ Car = function (game, x, y, scale, K11, K12, K21, K22, rotation) {
     this.body.bounce.set(1);
 
     game.add.existing(this);
-
 };
-
 Car.prototype = Object.create(Phaser.Sprite.prototype);
 Car.prototype.constructor = Car;
 Car.prototype.update = function() {
-	this.rotation = Math.atan2(this.body.velocity.x, -this.body.velocity.y);  
+	this.rotation = Math.atan2(this.body.velocity.x, -this.body.velocity.y); 	
 	this.body.width = this.size;  
 	this.body.height = this.size;
-    //  Automatically called by World.update
-    // this.angle += this.rotateSpeed;
+
+	// Calculate position of left sensor
+	tempX = -64*this.ScaleNumber;
+	tempY = -128*this.ScaleNumber;
+	//apply rotation
+	rotatedX = tempX*Math.cos(this.rotation) - tempY*Math.sin(this.rotation);
+	rotatedY = tempX*Math.sin(this.rotation) + tempY*Math.cos(this.rotation);
+	// translate back
+	this.leftSensor.x = rotatedX + this.x;
+	this.leftSensor.y = rotatedY + this.y;
+
+	// Calculate position of right sensor
+	tempX = 64*this.ScaleNumber;
+	tempY = -128*this.ScaleNumber;
+	//apply rotation
+	rotatedX = tempX*Math.cos(this.rotation) - tempY*Math.sin(this.rotation);
+	rotatedY = tempX*Math.sin(this.rotation) + tempY*Math.cos(this.rotation);
+	// translate back
+	this.rightSensor.x = rotatedX + this.x;
+	this.rightSensor.y = rotatedY + this.y;
 };
 
+
+//Light Object
 Light = function (game, x, y, scale) {
     Phaser.Sprite.call(this, game, x, y, 'light');
     this.anchor.setTo(0.5, 0.5);
     this.scale.setTo(scale, scale)
     game.add.existing(this);
 };
-
 Light.prototype = Object.create(Phaser.Sprite.prototype);
 Light.prototype.constructor = Light;
 Light.prototype.update = function() {};
+
+
 
 function preload() {
     game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
@@ -62,6 +102,7 @@ function preload() {
     game.stage.backgroundColor = '#555';
     game.load.image('car', 'img/Audi.png');
     game.load.image('light', 'img/Light.png');
+    game.load.image('sensor', 'img/Sensor.png');
 }
 
 function create() {
@@ -82,7 +123,9 @@ function create() {
     car.body.collideWorldBounds = true;
     car.body.bounce.set(1);
 
-  	new Car(game, game.world.randomX, game.world.randomX, 0.25, 0, 0, 0, 0,10);
+    sensor1 = game.add.sprite(-100, -100,  'sensor');
+
+  	new Car(game, game.world.randomX, game.world.randomX, 0.25, 0, 0, 0, 0, 0);
 
   	new Light(game, game.world.randomX, game.world.randomX, 1);
 }
