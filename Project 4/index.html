@@ -21,13 +21,13 @@
     	}
 
     	#randomvehicleform {
-    		top: 230px;
+    		top: 250px;
     		float: left;
     		position: absolute;
     	}
 
     	#deletevehicleform {
-    		top: 255px;
+    		top: 275px;
     		float: left;
     		position: absolute;
     	}
@@ -68,9 +68,9 @@
 		Vehicle size:
 		<input type="text" placeholder="Enter vehicle scale factor..." size="25" maxlength="2" id="vehiclesize"><br>
 		Vehicle x coordinate position:
-		<input type="text" placeholder="Enter x coordinate..." size="25" id="vehicle_x"><br>
+		<input type="text" placeholder="Enter x coordinate..." size="19" id="vehicle_x"><br>
 		Vehicle y coordinate position:
-		<input type="text" placeholder="Enter y coordinate..." size="25" id="vehicle_y"><br>
+		<input type="text" placeholder="Enter y coordinate..." size="19" id="vehicle_y"><br>
 		k<sub>11</sub>:
 		<input type="text" placeholder="Enter matrix value..." size="25" maxlength="2" id="k11"><br>
 		k<sub>12</sub>:
@@ -79,6 +79,8 @@
 		<input type="text" placeholder="Enter matrix value..." size="25" maxlength="2" id="k21"><br>
 		k<sub>22</sub>:
 		<input type="text" placeholder="Enter matrix value..." size="25" maxlength="2" id="k22"><br>
+		Vehicle type
+		<input type="text" placeholder="Enter type 2 or type 3" size="25" maxlength="2" id="vehicleType"><br>
 		<input type="submit" value="Create car"/>
 	</form>
 	<form id="randomvehicleform" action="#" onsubmit="addRandomCar();return false">
@@ -115,6 +117,10 @@
 		  	return Math.floor(Math.random() * (max - min + 1)) + min;
 		}
 
+		function getRandomArbitrary(min, max) {
+			return Math.floor(Math.random() * (max - min)) + min;
+		}
+
 		addCar = function() {			
 			// alert("Vehicle size is: " + vehicleSize + "\nX coordinate is: " + vehicleX + "\nY coordinate is: " + vehicleY + "\nK Matrix: [" + k11 + ", " + k12 + ", " + k21 + ", " + k22 +"]");
 			let vehicleSize = document.getElementById("vehiclesize").value;
@@ -124,10 +130,14 @@
 			let k12 = document.getElementById("k12").value;
 			let k21 = document.getElementById("k21").value;
 			let k22 = document.getElementById("k22").value;
+			let carType = document.getElementById("vehicleType").value;
+			if (carType != 3){
+				carType = 2;
+			}
 			// console.log(carX);
 			carX = Number(vehicleX);
 			carY = Number(vehicleY);
-			Cars.add(new Car(game, carX, carY, vehicleSize/4, k11, k12, k21, k22, 0));
+			Cars.add(new Car(game, carX, carY, vehicleSize/4, k11, k12, k21, k22, getRandomArbitrary(0, 2*Math.PI), carType));
 		}
 
 		addRandomCar = function() {			
@@ -136,8 +146,12 @@
 			let k12 = document.getElementById("k12").value;
 			let k21 = document.getElementById("k21").value;
 			let k22 = document.getElementById("k22").value;
+			let carType = document.getElementById("vehicleType").value;
+			if (carType != 3){
+				carType = 2;
+			}
 
-			Cars.add(new Car(game, getRandomIntInclusive(100, 700), getRandomIntInclusive(100, 700), vehicleSize/4, k11, k12, k21, k22, 0));
+			Cars.add(new Car(game, getRandomIntInclusive(100, 700), getRandomIntInclusive(100, 700), vehicleSize/4, k11, k12, k21, k22, getRandomArbitrary(0, 2*Math.PI), carType));
 		}
 
 		deleteCar = function() {
