@@ -101,11 +101,11 @@ Car.prototype.update = function() {
 	da = (this.rightSpeed - this.leftSpeed)/(this.carWidth);
 
 	s = (this.rightSpeed + this.leftSpeed)/2;
-	this.rotation = (this.rotation + da) % (2*Math.PI);
-	console.log(this.rotation);
+	this.rotation = (this.rotation + da);
+	// console.log(this.rotation);
 	// this.theta = (this.rightSpeed - this.leftSpeed)/this.carWidth + this.theta;
-	this.x = this.x + s*Math.cos(Math.PI/2 + this.rotation);
-	this.y = this.y + s*Math.sin(Math.PI/2 + this.rotation);
+	this.x = this.x + s*Math.cos((Math.PI/2 + this.rotation));
+	this.y = this.y + s*Math.sin((Math.PI/2 + this.rotation));
 	// this.rotation = this.theta;
 
 
@@ -197,8 +197,8 @@ Car.prototype.setWheelSpeed = function() {
  	// console.log(s2);
 
 
-    this.rightSpeed = this.k11*s1 + this.k12*s2;
-    this.leftSpeed = this.k21*s1 + this.k22*s2;
+    this.leftSpeed = this.k11*s1 + this.k12*s2;
+    this.rightSpeed = this.k21*s1 + this.k22*s2;
     // console.log(this.rightSpeed);
     // console.log(this.leftSpeed);
     }
@@ -230,11 +230,13 @@ function preload() {
     game.load.image('car', 'img/Audi.png');
     game.load.image('light', 'img/Light.png');
     game.load.image('sensor', 'img/Sensor.png');
+    game.load.image('background', 'img/background.jpg');
 }
 
 function create() {
 	game.world.setBounds(0,0,800,800);
 	game.physics.startSystem(Phaser.Physics.ARCADE);
+	game.add.image(game.world.centerX, game.world.centerY, 'background').anchor.set(0.5);
 
  	// car = game.add.sprite(game.world.randomX, game.world.randomY,  'car');
   // 	// Pick a random number between -2 and 6
@@ -252,11 +254,11 @@ function create() {
 
     sensor1 = game.add.sprite(-200, -200,  'sensor');
 
-  	new Car(game, 600, 200, 0.25, 5, 0, 0, 5, 0);
+  	new Car(game, game.world.randomX, game.world.randomY, 0.25, 0, 5, 5, 0, 0);
 
   	Lights = game.add.group();
-  	for(r=0; r<1; r++) {
-        newLight = new Light(game, 400, 400, 1);
+  	for(r=0; r<5; r++) {
+        newLight = new Light(game, game.world.randomX, game.world.randomY, 1);
         Lights.add(newLight);
     }
 }
