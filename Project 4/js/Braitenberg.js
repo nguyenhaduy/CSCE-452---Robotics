@@ -57,8 +57,8 @@ Car = function (game, x, y, scale, K11, K12, K21, K22, rotation) {
     this.k21 = K21;
     this.k22 = K22;
 
-    this.rightSensor = new Sensor(x+64*scale, y-128*scale, scale);
-    this.leftSensor = new Sensor(x-64*scale, y-128*scale, scale);
+    this.rightSensor = new Sensor(x+64*scale, y+128*scale, scale);
+    this.leftSensor = new Sensor(x-64*scale, y+128*scale, scale);
 
     this.rightWheel = new Wheel(x+32*scale, y, scale);
     this.leftWheel = new Wheel(x-32*scale, y, scale);
@@ -77,7 +77,7 @@ Car = function (game, x, y, scale, K11, K12, K21, K22, rotation) {
 
     game.physics.enable(this, Phaser.Physics.ARCADE);
   	// this.body.drag.set(0.2);
-  	// this.body.maxVelocity.setTo(200,200);
+  	this.body.maxVelocity.setTo(200,200);
    //  this.body.velocity.set(150, 100);
     this.body.collideWorldBounds = true;
     this.body.bounce.set(1);
@@ -91,7 +91,9 @@ Car.prototype.update = function() {
 	this.body.width = this.size;  
 	this.body.height = this.size;
 	this.setWheelSpeed();
+	// console.log('rightSpeed: ');
 	// console.log(this.rightSpeed);
+ //    console.log('leftSpeed :');
  //    console.log(this.leftSpeed);
 
 
@@ -99,11 +101,12 @@ Car.prototype.update = function() {
 	da = (this.rightSpeed - this.leftSpeed)/(this.carWidth);
 
 	s = (this.rightSpeed + this.leftSpeed)/2;
-	// this.theta = (this.theta + da*dt) % (2*Math.PI);
-	this.theta = -(this.rightSpeed - this.leftSpeed)/this.carWidth + this.theta;
-	this.x = s*Math.cos(-this.theta) + this.x;
-	this.y = s*Math.sin(-this.theta) + this.y;
-	this.rotation = this.theta;
+	this.rotation = (this.rotation + da) % (2*Math.PI);
+	console.log(this.rotation);
+	// this.theta = (this.rightSpeed - this.leftSpeed)/this.carWidth + this.theta;
+	this.x = this.x + s*Math.cos(Math.PI/2 + this.rotation);
+	this.y = this.y + s*Math.sin(Math.PI/2 + this.rotation);
+	// this.rotation = this.theta;
 
 
 
@@ -138,8 +141,9 @@ Car.prototype.update = function() {
  //        // rdy = 5;
 
  //        this.x = this.x + rdx*dt;
- //        this.y = this.x - rdy*dt;
+ //        this.y = this.x + rdy*dt;
  //        this.rotation = this.rotation + theta;
+ //        // console.log(this.rotation);
  //    } else {
  //        dx = f*dt*Math.cos(this.rotation);
  //        dy = f*dt*Math.sin(this.rotation);
@@ -156,12 +160,12 @@ Car.prototype.update = function() {
 
 	// Calculate position of left sensor
 	tempX = -64*this.ScaleNumber;
-	tempY = -128*this.ScaleNumber;
+	tempY = 128*this.ScaleNumber;
 	this.leftSensor.rotateAbout(tempX, tempY, this.x, this.y, this.rotation);
 
 	// Calculate position of right sensor
 	tempX = 64*this.ScaleNumber;
-	tempY = -128*this.ScaleNumber;
+	tempY = 128*this.ScaleNumber;
 	this.rightSensor.rotateAbout(tempX, tempY, this.x, this.y, this.rotation);
 
 	// Calculate position of left wheel
@@ -182,6 +186,8 @@ Car.prototype.setWheelSpeed = function() {
     
     len = Lights.children.length;
     for (var i = 0; i < len; i++) { 
+
+    	// if(Light.children[i].length)
     	s1 += Lights.children[i].intensityToLightSource(this.leftSensor);
         s2 += Lights.children[i].intensityToLightSource(this.rightSensor);
 	}
@@ -210,8 +216,8 @@ Light.prototype = Object.create(Phaser.Sprite.prototype);
 Light.prototype.constructor = Light;
 Light.prototype.intensityToLightSource = function(sensor) {
 	distance = Phaser.Math.distance(this.x, this.y, sensor.x, sensor.y);
-	// console.log(this.intensity/distance);
-	return (this.intensity/distance);
+	// console.log(distance);
+	return (this.intensity/Math.abs(distance));
 };
 
 
@@ -246,14 +252,11 @@ function create() {
 
     sensor1 = game.add.sprite(-200, -200,  'sensor');
 
-  	new Car(game, game.world.randomX, game.world.randomX, 0.25, -2, -10, -10, -2, Math.PI/6);
-  	new Car(game, game.world.randomX, game.world.randomX, 0.25, -2, -10, -10, -2, Math.PI/6);
-  	new Car(game, game.world.randomX, game.world.randomX, 0.25, -2, -10, -10, -2, Math.PI/6);
-  	new Car(game, game.world.randomX, game.world.randomX, 0.25, -2, -10, -10, -2, Math.PI/6);
+  	new Car(game, 600, 200, 0.25, 5, 0, 0, 5, 0);
 
   	Lights = game.add.group();
-  	for(r=0; r<5; r++) {
-        newLight = new Light(game, game.world.randomX, game.world.randomX, 1);
+  	for(r=0; r<1; r++) {
+        newLight = new Light(game, 400, 400, 1);
         Lights.add(newLight);
     }
 }
