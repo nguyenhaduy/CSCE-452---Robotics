@@ -8,19 +8,45 @@
     	* {
     		padding: 0; margin: 0;
     	}
+
+    	#vehicleform {
+    		top: 60px;
+    		float: left;
+    		position: absolute;
+    	}
+
+    	#createvehicle {
+    		position: absolute;
+    		top: 30px;
+    	}
+
+    	#lightform {
+    		top: 270px;
+    		float: left;
+    		position: absolute;
+    	}
+
+    	#createlight {
+    		top: 240px;
+    		float: left;
+    		position: absolute;
+    	}
+
     </style>
     <script type="text/javascript" src="lib/phaser.min.js" ></script>
     <script type="text/javascript" src="js/Braitenberg.js"></script>
 </head>
 <body>
-	<h3 id="createvehicle">Create vehicle</h3>
+	<div id="createvehicle">
+		<h3 >Create vehicle</h3>
+	</div>
 	<form id="vehicleform" method="POST" onsubmit="">
 		Vehicle size:
 		<input type="text" placeholder="Enter vehicle scale factor..." size="25" maxlength="2" id="vehiclesize"><br>
 		Vehicle x coordinate position:
-		<input type="text" placeholder="Enter x coordinate..." size="25" maxlength="3" id="vehiclex"><br>
+		<input type="text" placeholder="Enter x coordinate..." size="19" maxlength="3" id="vehiclex"><br>
 		Vehicle y coordinate position:
-		<input type="text" placeholder="Enter y coordinate..." size="25" maxlength="3" id="vehicley"><br>
+		<input type="text" placeholder="Enter y coordinate..." size="19" maxlength="3" id="vehicley"><br>
 		k<sub>11</sub>:
 		<input type="text" placeholder="Enter matrix value..." size="25" maxlength="2" id="k11"><br>
 		k<sub>12</sub>:
@@ -32,12 +58,14 @@
 		<input type="submit" value="Create car"/>
 	</form>
 	<br>
-	<h3 id="createlight">Create light</h3>
+	<div id="createlight">
+		<h3>Create light</h3>
+	</div>
 	<form id="lightform" method="POST">
 		Light x coordinate position:
-		<input type="text" placeholder="Enter x coordinate..." size="25" maxlength="3" id="lightx"><br>
+		<input type="text" placeholder="Enter x coordinate..." size="21" maxlength="3" id="lightx"><br>
 		Light y coordinate position:
-		<input type="text" placeholder="Enter y coordinate..." size="25" maxlength="3" id="lighty"><br>
+		<input type="text" placeholder="Enter y coordinate..." size="21" maxlength="3" id="lighty"><br>
 		<input type="submit" value="Create light"/>
 	</form>
     <script type="text/javascript">
