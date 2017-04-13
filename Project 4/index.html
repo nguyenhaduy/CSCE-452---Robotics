@@ -70,7 +70,8 @@
 	</form>
     <script type="text/javascript">
 		// Get values of input fields
-		document.getElementById("vehicleform").onsubmit = function() {
+		document.getElementById("vehicleform").onsubmit = function(e) {
+			e.preventDefault();
 			let vehicleSize = document.getElementById("vehiclesize").value;
 			let vehicleX = document.getElementById("vehiclex").value;
 			let vehicleY = document.getElementById("vehicley").value;
@@ -81,7 +82,8 @@
 			alert("Vehicle size is: " + vehicleSize + "\nX coordinate is: " + vehicleX + "\nY coordinate is: " + vehicleY + "\nK Matrix: [" + k11 + ", " + k12 + ", " + k21 + ", " + k22 +"]");
 		}
 
-		document.getElementById("lightform").onsubmit = function() {
+		document.getElementById("lightform").onsubmit = function(e) {
+			e.preventDefault();
 			let lightX = document.getElementById("lightx").value;
 			let lightY = document.getElementById("lighty").value;
 			alert("X coordinate is: " + lightX + "\nY coordinate is " + lightY);
