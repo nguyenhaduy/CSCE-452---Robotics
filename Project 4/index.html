@@ -20,14 +20,38 @@
     		top: 30px;
     	}
 
+    	#randomvehicleform {
+    		top: 230px;
+    		float: left;
+    		position: absolute;
+    	}
+
+    	#deletevehicleform {
+    		top: 255px;
+    		float: left;
+    		position: absolute;
+    	}
+
     	#lightform {
-    		top: 270px;
+    		top: 310px;
     		float: left;
     		position: absolute;
     	}
 
     	#createlight {
-    		top: 240px;
+    		top: 280px;
+    		float: left;
+    		position: absolute;
+    	}
+
+    	#randomlightform {
+    		top: 375px;
+    		float: left;
+    		position: absolute;
+    	}
+
+    	#deletelightform {
+    		top: 400px;
     		float: left;
     		position: absolute;
     	}
@@ -40,13 +64,13 @@
 	<div id="createvehicle">
 		<h3 >Create vehicle</h3>
 	</div>
-	<form id="vehicleform" method="POST" onsubmit="">
+	<form id="vehicleform" action ='#' onsubmit="addCar(); return false;">
 		Vehicle size:
 		<input type="text" placeholder="Enter vehicle scale factor..." size="25" maxlength="2" id="vehiclesize"><br>
 		Vehicle x coordinate position:
-		<input type="text" placeholder="Enter x coordinate..." size="19" maxlength="3" id="vehiclex"><br>
+		<input type="text" placeholder="Enter x coordinate..." size="25" id="vehicle_x"><br>
 		Vehicle y coordinate position:
-		<input type="text" placeholder="Enter y coordinate..." size="19" maxlength="3" id="vehicley"><br>
+		<input type="text" placeholder="Enter y coordinate..." size="25" id="vehicle_y"><br>
 		k<sub>11</sub>:
 		<input type="text" placeholder="Enter matrix value..." size="25" maxlength="2" id="k11"><br>
 		k<sub>12</sub>:
@@ -57,37 +81,91 @@
 		<input type="text" placeholder="Enter matrix value..." size="25" maxlength="2" id="k22"><br>
 		<input type="submit" value="Create car"/>
 	</form>
+	<form id="randomvehicleform" action="#" onsubmit="addRandomCar();return false">
+		<input type="submit" value="Create car at random position"/>
+	</form>
+	<form id="deletevehicleform" action="#" onsubmit="deleteCar(); return false">
+		    <input type="submit" value="Delete Previous Vehicle"/>
+	</form>
 	<br>
 	<div id="createlight">
 		<h3>Create light</h3>
 	</div>
-	<form id="lightform" method="POST">
+	<form id="lightform" action ='#' onsubmit="addLight(); return false;">
 		Light x coordinate position:
 		<input type="text" placeholder="Enter x coordinate..." size="21" maxlength="3" id="lightx"><br>
 		Light y coordinate position:
 		<input type="text" placeholder="Enter y coordinate..." size="21" maxlength="3" id="lighty"><br>
 		<input type="submit" value="Create light"/>
+		
 	</form>
+	<form id="randomlightform" action="#" onsubmit="addRandomLight(); return false">
+		    <input type="submit" value="Create light at random position"/>
+	</form>
+	<form id="deletelightform" action="#" onsubmit="deleteLight(); return false">
+		    <input type="submit" value="Delete Previous Light"/>
+	</form>
+	<br>
     <script type="text/javascript">
 		// Get values of input fields
-		document.getElementById("vehicleform").onsubmit = function(e) {
-			e.preventDefault();
+		
+		function getRandomIntInclusive(min, max) {
+		  	min = Math.ceil(min);
+		  	max = Math.floor(max);
+		  	return Math.floor(Math.random() * (max - min + 1)) + min;
+		}
+
+		addCar = function() {			
+			// alert("Vehicle size is: " + vehicleSize + "\nX coordinate is: " + vehicleX + "\nY coordinate is: " + vehicleY + "\nK Matrix: [" + k11 + ", " + k12 + ", " + k21 + ", " + k22 +"]");
 			let vehicleSize = document.getElementById("vehiclesize").value;
-			let vehicleX = document.getElementById("vehiclex").value;
-			let vehicleY = document.getElementById("vehicley").value;
+			let vehicleX = document.getElementById("vehicle_x").value;
+			let vehicleY = document.getElementById("vehicle_y").value;
 			let k11 = document.getElementById("k11").value;
 			let k12 = document.getElementById("k12").value;
 			let k21 = document.getElementById("k21").value;
 			let k22 = document.getElementById("k22").value;
-			alert("Vehicle size is: " + vehicleSize + "\nX coordinate is: " + vehicleX + "\nY coordinate is: " + vehicleY + "\nK Matrix: [" + k11 + ", " + k12 + ", " + k21 + ", " + k22 +"]");
+			// console.log(carX);
+			carX = Number(vehicleX);
+			carY = Number(vehicleY);
+			Cars.add(new Car(game, carX, carY, vehicleSize/4, k11, k12, k21, k22, 0));
 		}
 
-		document.getElementById("lightform").onsubmit = function(e) {
-			e.preventDefault();
+		addRandomCar = function() {			
+			let vehicleSize = document.getElementById("vehiclesize").value;
+			let k11 = document.getElementById("k11").value;
+			let k12 = document.getElementById("k12").value;
+			let k21 = document.getElementById("k21").value;
+			let k22 = document.getElementById("k22").value;
+
+			Cars.add(new Car(game, getRandomIntInclusive(100, 700), getRandomIntInclusive(100, 700), vehicleSize/4, k11, k12, k21, k22, 0));
+		}
+
+		deleteCar = function() {
+			let len1 = Cars.children.length;
+			Cars.children[len1 - 1].rightSensor.destroy();
+			Cars.children[len1 - 1].leftSensor.destroy();
+			Cars.children[len1 - 1].destroy();
+		}
+
+		addLight = function() {
+			// alert("X coordinate is: " + lightX + "\nY coordinate is " + lightY);		
 			let lightX = document.getElementById("lightx").value;
 			let lightY = document.getElementById("lighty").value;
-			alert("X coordinate is: " + lightX + "\nY coordinate is " + lightY);
+			// console.log(lightX);
+			newLight = new Light(game, lightX, lightY, 1);
+        	Lights.add(newLight);
 		}
+
+		addRandomLight = function() {			
+			newLight = new Light(game, getRandomIntInclusive(100, 700), getRandomIntInclusive(100, 700), 1);
+        	Lights.add(newLight);
+		}
+
+		deleteLight = function() {
+			let len2 = Lights.children.length;
+			Lights.children[len2 - 1].destroy();
+		}
+
     </script>
 </body>
 </html>
