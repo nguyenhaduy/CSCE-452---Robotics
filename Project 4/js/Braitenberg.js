@@ -49,13 +49,14 @@ Wheel.prototype.rotateAbout = function(tempX, tempY, cx, cy, theta){
 
 
 // Car Object
-Car = function (game, x, y, scale, K11, K12, K21, K22, rotation) {
+Car = function (game, x, y, scale, K11, K12, K21, K22, rotation, carType) {
 
     
     Phaser.Sprite.call(this, game, x, y, 'car');
     // console.log(this.x);
     // console.log(this.y);
 
+    this.type = carType;
     this.k11 = K11;
     this.k12 = K12;
     this.k21 = K21;
@@ -138,27 +139,34 @@ Car.prototype.update = function() {
   
 };
 Car.prototype.setWheelSpeed = function() {
+  len = Lights.children.length;
+  if (len != 0){
     s1 = 0.0;
     s2 = 0.0;
-    
-    len = Lights.children.length;
+            
     for (var i = 0; i < len; i++) { 
 
       // if(Light.children[i].length)
       s1 += Lights.children[i].intensityToLightSource(this.leftSensor);
-        s2 += Lights.children[i].intensityToLightSource(this.rightSensor);
-  }
-  s1 = s1/len;
-  s2 = s2/len;
-  // console.log(s1);
-  // console.log(s2);
+      s2 += Lights.children[i].intensityToLightSource(this.rightSensor);
+    }
+    s1 = s1/len;
+    s2 = s2/len;
+    // console.log(s1);
+    // console.log(s2);
 
-
-    this.leftSpeed = this.k11*s1 + this.k12*s2;
-    this.rightSpeed = this.k21*s1 + this.k22*s2;
+    if (this.type == 2){
+      this.leftSpeed = this.k11*s1 + this.k12*s2;
+      this.rightSpeed = this.k21*s1 + this.k22*s2;
+    } else if (this.type == 3) {
+      this.leftSpeed = this.k11*(1-s1) + this.k12*(1-s2);
+      this.rightSpeed = this.k21*(1-s1) + this.k22*(1-s2);
+    }
+   
     // console.log(this.rightSpeed);
     // console.log(this.leftSpeed);
-    }
+  }
+}
 
 
 //Light Object
