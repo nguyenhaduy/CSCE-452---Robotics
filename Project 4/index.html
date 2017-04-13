@@ -4,31 +4,60 @@
     <meta charset="utf-8" />
    <!--  <link rel="stylesheet" type="text/css" href="style.css" /> -->
     <title>Braitenberg Vehicles</title>
-    <style>* { padding: 0; margin: 0; }</style>    
+    <style>
+    	* {
+    		padding: 0; margin: 0;
+    	}
+    </style>
     <script type="text/javascript" src="lib/phaser.min.js" ></script>
     <script type="text/javascript" src="js/Braitenberg.js"></script>
-    
-    
-
 </head>
 <body>
-    <!-- <div id="Display">
-        <div id="Braitenberg" >
-            <canvas id="Main" width="800" height="800"></canvas>
-        </div>
+	<h3 id="createvehicle">Create vehicle</h3>
+	<form id="vehicleform" method="POST" onsubmit="">
+		Vehicle size:
+		<input type="text" placeholder="Enter vehicle scale factor..." size="25" maxlength="2" id="vehiclesize"><br>
+		Vehicle x coordinate position:
+		<input type="text" placeholder="Enter x coordinate..." size="25" maxlength="3" id="vehiclex"><br>
+		Vehicle y coordinate position:
+		<input type="text" placeholder="Enter y coordinate..." size="25" maxlength="3" id="vehicley"><br>
+		k<sub>11</sub>:
+		<input type="text" placeholder="Enter matrix value..." size="25" maxlength="2" id="k11"><br>
+		k<sub>12</sub>:
+		<input type="text" placeholder="Enter matrix value..." size="25" maxlength="2" id="k12"><br>
+		k<sub>21</sub>:
+		<input type="text" placeholder="Enter matrix value..." size="25" maxlength="2" id="k21"><br>
+		k<sub>22</sub>:
+		<input type="text" placeholder="Enter matrix value..." size="25" maxlength="2" id="k22"><br>
+		<input type="submit" value="Create car"/>
+	</form>
+	<br>
+	<h3 id="createlight">Create light</h3>
+	<form id="lightform" method="POST">
+		Light x coordinate position:
+		<input type="text" placeholder="Enter x coordinate..." size="25" maxlength="3" id="lightx"><br>
+		Light y coordinate position:
+		<input type="text" placeholder="Enter y coordinate..." size="25" maxlength="3" id="lighty"><br>
+		<input type="submit" value="Create light"/>
+	</form>
+    <script type="text/javascript">
+		// Get values of input fields
+		document.getElementById("vehicleform").onsubmit = function() {
+			let vehicleSize = document.getElementById("vehiclesize").value;
+			let vehicleX = document.getElementById("vehiclex").value;
+			let vehicleY = document.getElementById("vehicley").value;
+			let k11 = document.getElementById("k11").value;
+			let k12 = document.getElementById("k12").value;
+			let k21 = document.getElementById("k21").value;
+			let k22 = document.getElementById("k22").value;
+			alert("Vehicle size is: " + vehicleSize + "\nX coordinate is: " + vehicleX + "\nY coordinate is: " + vehicleY + "\nK Matrix: [" + k11 + ", " + k12 + ", " + k21 + ", " + k22 +"]");
+		}
 
-        <div id="LightOptions" style="display:none;">
-            <input id="CreateRoomName" type="text"></input><br>
-            <button id="CreateButton"><font size="4">Create New Room</font></button>
-            <button id="BackButton1"><font size="4">Back</font></button>            
-        </div>
-
-        <div id="VehicleOption" style="display:none;">
-            <input id="JoinRoomName" type="text"  style="display:none;"></input><br>
-            <select id="RoomSelectBox" multiple="multiple">
-            </select>
-            <button id="JoinRoomButton"><font size="4">Join Room</font></button>
-            <button id="BackButton2"><font size="4">Back</font></button>            
-        </div> -->
+		document.getElementById("lightform").onsubmit = function() {
+			let lightX = document.getElementById("lightx").value;
+			let lightY = document.getElementById("lighty").value;
+			alert("X coordinate is: " + lightX + "\nY coordinate is " + lightY);
+		}
+    </script>
 </body>
 </html>
