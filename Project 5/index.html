@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+   <!--  <link rel="stylesheet" type="text/css" href="style.css" /> -->
+    <title>Braitenberg Vehicles</title>
+    <style>
+    	* {
+    		padding: 0; margin: 0;
+    	}
+
+    	#vehicleform {
+    		top: 60px;
+    		float: left;
+    		position: absolute;
+    	}
+
+    	#createvehicle {
+    		position: absolute;
+    		top: 35px;
+    	}
+
+    	#randomvehicleform {
+    		top: 250px;
+    		float: left;
+    		position: absolute;
+    	}
+
+    	#deletevehicleform {
+    		top: 275px;
+    		float: left;
+    		position: absolute;
+    	}
+
+    	#lightform {
+    		top: 330px;
+    		float: left;
+    		position: absolute;
+    	}
+
+    	#createlight {
+    		top: 310px;
+    		float: left;
+    		position: absolute;
+    	}
+
+    	#randomlightform {
+    		top: 395px;
+    		float: left;
+    		position: absolute;
+    	}
+
+    	#deletelightform {
+    		top: 420px;
+    		float: left;
+    		position: absolute;
+    	}
+
+    </style>
+    <script type="text/javascript" src="lib/phaser.min.js" ></script>
+    <script type="text/javascript" src="js/Braitenberg.js"></script>
+</head>
+<body>
+	<div id="createvehicle">
+		<h3 >Create vehicle</h3>
+	</div>
+	<form id="vehicleform" action ='#' onsubmit="addCar(); return false;">
+		Vehicle size:
+		<input type="text" placeholder="Enter vehicle scale factor..." size="25" maxlength="2" id="vehiclesize"><br>
+		Vehicle x coordinate position:
+		<input type="text" placeholder="Enter x coordinate..." size="19" id="vehicle_x"><br>
+		Vehicle y coordinate position:
+		<input type="text" placeholder="Enter y coordinate..." size="19" id="vehicle_y"><br>
+		k<sub>11</sub>:
+		<input type="text" placeholder="Enter matrix value..." size="25" maxlength="2" id="k11"><br>
+		k<sub>12</sub>:
+		<input type="text" placeholder="Enter matrix value..." size="25" maxlength="2" id="k12"><br>
+		k<sub>21</sub>:
+		<input type="text" placeholder="Enter matrix value..." size="25" maxlength="2" id="k21"><br>
+		k<sub>22</sub>:
+		<input type="text" placeholder="Enter matrix value..." size="25" maxlength="2" id="k22"><br>
+		Vehicle type
+		<input type="text" placeholder="Enter type 2 or type 3" size="25" maxlength="2" id="vehicleType"><br>
+		<input type="submit" value="Create car"/>
+	</form>
+	<form id="randomvehicleform" action="#" onsubmit="addRandomCar();return false">
+		<input type="submit" value="Create car at random position"/>
+	</form>
+	<form id="deletevehicleform" action="#" onsubmit="deleteCar(); return false">
+		    <input type="submit" value="Delete Previous Vehicle"/>
+	</form>
+	<br>
+	<div id="createlight">
+		<h3>Create light</h3>
+	</div>
+	<form id="lightform" action ='#' onsubmit="addLight(); return false;">
+		Light x coordinate position:
+		<input type="text" placeholder="Enter x coordinate..." size="21" maxlength="3" id="lightx"><br>
+		Light y coordinate position:
+		<input type="text" placeholder="Enter y coordinate..." size="21" maxlength="3" id="lighty"><br>
+		<input type="submit" value="Create light"/>
+		
+	</form>
+	<form id="randomlightform" action="#" onsubmit="addRandomLight(); return false">
+		    <input type="submit" value="Create light at random position"/>
+	</form>
+	<form id="deletelightform" action="#" onsubmit="deleteLight(); return false">
+		    <input type="submit" value="Delete Previous Light"/>
+	</form>
+	<br>
+    <script type="text/javascript">
+		// Get values of input fields
+		
+		function getRandomIntInclusive(min, max) {
+		  	min = Math.ceil(min);
+		  	max = Math.floor(max);
+		  	return Math.floor(Math.random() * (max - min + 1)) + min;
+		}
+
+		function getRandomArbitrary(min, max) {
+			return Math.floor(Math.random() * (max - min)) + min;
+		}
+
+		addCar = function() {			
+			// alert("Vehicle size is: " + vehicleSize + "\nX coordinate is: " + vehicleX + "\nY coordinate is: " + vehicleY + "\nK Matrix: [" + k11 + ", " + k12 + ", " + k21 + ", " + k22 +"]");
+			let vehicleSize = document.getElementById("vehiclesize").value;
+			let vehicleX = document.getElementById("vehicle_x").value;
+			let vehicleY = document.getElementById("vehicle_y").value;
+			let k11 = document.getElementById("k11").value;
+			let k12 = document.getElementById("k12").value;
+			let k21 = document.getElementById("k21").value;
+			let k22 = document.getElementById("k22").value;
+			let carType = document.getElementById("vehicleType").value;
+			if (carType != 3){
+				carType = 2;
+			}
+			// console.log(carX);
+			carX = Number(vehicleX);
+			carY = Number(vehicleY);
+			Cars.add(new Car(game, carX, carY, vehicleSize/4, k11, k12, k21, k22, getRandomArbitrary(0, 2*Math.PI), carType));
+		}
+
+		addRandomCar = function() {			
+			let vehicleSize = document.getElementById("vehiclesize").value;
+			let k11 = document.getElementById("k11").value;
+			let k12 = document.getElementById("k12").value;
+			let k21 = document.getElementById("k21").value;
+			let k22 = document.getElementById("k22").value;
+			let carType = document.getElementById("vehicleType").value;
+			if (carType != 3){
+				carType = 2;
+			}
+
+			Cars.add(new Car(game, getRandomIntInclusive(100, 700), getRandomIntInclusive(100, 700), vehicleSize/4, k11, k12, k21, k22, getRandomArbitrary(0, 2*Math.PI), carType));
+		}
+
+		deleteCar = function() {
+			let len1 = Cars.children.length;
+			Cars.children[len1 - 1].rightSensor.destroy();
+			Cars.children[len1 - 1].leftSensor.destroy();
+			Cars.children[len1 - 1].destroy();
+		}
+
+		addLight = function() {
+			// alert("X coordinate is: " + lightX + "\nY coordinate is " + lightY);		
+			let lightX = document.getElementById("lightx").value;
+			let lightY = document.getElementById("lighty").value;
+			// console.log(lightX);
+			newLight = new Light(game, lightX, lightY, 1);
+        	Lights.add(newLight);
+		}
+
+		addRandomLight = function() {			
+			newLight = new Light(game, getRandomIntInclusive(100, 700), getRandomIntInclusive(100, 700), 1);
+        	Lights.add(newLight);
+		}
+
+		deleteLight = function() {
+			let len2 = Lights.children.length;
+			Lights.children[len2 - 1].destroy();
+		}
+
+    </script>
+</body>
+</html>
