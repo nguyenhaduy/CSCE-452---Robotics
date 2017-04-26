@@ -1,119 +1,35 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8" />
-   <!--  <link rel="stylesheet" type="text/css" href="style.css" /> -->
-    <title>Pathfinder</title>
-    <style>
-    	* {
-    		padding: 0; margin: 0;
-    	}
-    	#start, #reset {
-    		width: 60px;
-    		height: 20px;
-    		position: absolute;
-    	}
-    	#start {
-    		top: 130px;
-    		left: 160px;
-    	}
-    	#reset {
-    		top: 190px;
-    		left: 160px;
-    	}
-    </style>
-    <script type="text/javascript" src="lib/phaser.min.js" ></script>
-    <script type="text/javascript" src="lib/easystar-0.2.1.min.js"></script>
-    <script type="text/javascript" src="js/Pathfinding.js"></script>
-</head>
-<body>
-	<form action ='#' onsubmit="startPath(); return false;">
-		<input type="submit" value="Start" id="start"/>
-	</form>
-	<form action="#" onsubmit="resetPath(); return false;">
-		<input type="submit" value="Reset" id="reset"/>
-	</form>
-    <script type="text/javascript">
-		function startPath() {
-			console.log("Start pressed");
-			console.log(square3.x);
-			console.log(square3.y);
 
-			var positionx3 = (square3.x+50)/25;
-			var positiony3 = (square3.y+50)/25;
-			console.log(positionx3);
-			console.log(positiony3);
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+		<title>Learn Game Development at ZENVA.com</title>
+        
+		<style>
+		  body {
+		    padding: 0px;
+		    margin: 0px;
+		    background-color: black;
+		  }
+        
+        </style>
+	</head>
 
-			var positionx2 = (square2.x+75)/25;
-			var positiony2 = (square2.y+75)/25;
-
-			var positionx1 = (square1.x+100)/25;
-			var positiony1 = (square1.y+100)/25;
-
-			for(var i=0; i<20; i++) {
-		      	map[i] = [];
-		      	for(var j=0; j<20; j++) {
-		      		if ((i < positionx3) && (i>positionx3-5)&&(j<positiony3)&&(j>positiony3-5))
-		      			map[i][j] = 1
-		      		else if ((i < positionx2) && (i>positionx2-7)&&(j<positiony2)&&(j>positiony2-7))
-		      			map[i][j] = 1
-		      		else if ((i < positionx1) && (i>positionx1-9)&&(j<positiony1)&&(j>positiony1-9))
-		      			map[i][j] = 1
-		      		else
-		          		map[i][j] = 0;
-		      	}
-		    }
-			console.log(map);
-
-			var easystar = new EasyStar.js();
-
-			easystar.setGrid(map);
-			easystar.setAcceptableTiles([0]);
-
-			var path;
-
-			easystar.findPath(1, 1, 19, 19, function( path ) {
-		        if (path === null) {
-			        console.log("The path to the destination point was not found.");
-			    } else {
-			    	alert(console.log("Calculate path"));
-			      
-			    	for (var i = 0; i < path.length; i++){
-			    		console.log("P: " + i + ", X: " + path[i].x + ",Y: " + path[i].y);
-			    	}
-			    	
-			    }
-			});
-
-
-			// for(var i = positionx3 - 4; i < positionx3; i++) {
-		 //      map[i] = [];
-		 //      for(var j=positiony3 - 4; j<positiony3; j++) {
-		 //          map[i][j] = 1;
-		 //      }
-		 //    }
-
-			// for(var i = positionx2 - 6; i < positionx2; i++) {
-		 //      map[i] = [];
-		 //      for(var j=positiony2 - 6; j<positiony2; j++) {
-		 //          map[i][j] = 1;
-		 //      }
-		 //    }
-
-		 //    var positionx1 = (square1.x+100)/25;
-			// var positiony1 = (square1.y+100)/25;
-			// for(var i = positionx1 - 8; i < positionx1; i++) {
-		 //      map[i] = [];
-		 //      for(var j=positiony1 - 8; j<positiony1; j++) {
-		 //          map[i][j] = 1;
-		 //      }
-		 //    }
-
-		    // console.log(map);
-		}
-		function resetPath() {
-			console.log("Reset pressed");
-		}
-    </script>
-</body>
+	<body>        
+        <script type="text/javascript" src="js/phaser.js"></script>
+        
+        <script type="text/javascript" src="js/easystar-0.2.3.js"></script>
+        
+        <script src="js/Pathfinding.js"></script>
+        
+        <script src="js/states/BootState.js"></script>
+        <script src="js/states/LoadingState.js"></script>
+        <script src="js/states/WorldState.js"></script>
+        
+        <script src="js/prefabs/Prefab.js"></script>
+        <script src="js/prefabs/Player.js"></script>
+        
+        <script type="text/javascript" src="js/main.js"></script>
+	</body>
 </html>
