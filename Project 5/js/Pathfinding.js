@@ -3,7 +3,7 @@ var game = new Phaser.Game(500, 500, Phaser.CANVAS, null, {
 
 var map = [];
 
-var easystar = new EasyStar.js();
+// var easystar = new EasyStar.js();
 
 var square1, square2, square3;
 var startPoint, finishPoint;
@@ -56,31 +56,31 @@ Item = function(x, y, sprite){
 Item.prototype = Object.create(Phaser.Sprite.prototype);
 Item.prototype.constructor = Item;
 Item.prototype.savePosition = function(){
-  console.log("saving");
-  console.log(this.x);
-  console.log(this.y);
+  // console.log("saving");
+  // console.log(this.x);
+  // console.log(this.y);
 }
 Item.prototype.checkPosition = function(){
-  console.log("checkPosition");
+  // console.log("checkPosition");
   // game.physics.arcade.overlap(this, square1, this.moveback, null, this);
-  collisionCheck = true;
-  this.savedX = this.x;
-  this.savedY = this.y;
+  // collisionCheck = true;
+  // this.savedX = this.x;
+  // this.savedY = this.y;
 }
 Item.prototype.moveback = function(){
-  console.log("moveback");
+  // console.log("moveback");
   // this.input.enableDrag(false);
-  console.log(this.savedX);
-  console.log(this.savedY);
-  console.log("moveback");
+  // console.log(this.savedX);
+  // console.log(this.savedY);
+  // console.log("moveback");
 
 
   this.x = this.savedX;
   this.y = this.savedY;
 }
 Item.prototype.update = function(){
-  // this.x = 25*Math.round(this.x /25) - 12.5;
-  // this.y = 25*Math.round(this.y /25) - 12.5;
+  this.x = 25*Math.round(this.x /25) - 12.5;
+  this.y = 25*Math.round(this.y /25) - 12.5;
 }
 
 
@@ -113,29 +113,29 @@ function create() {
   game.physics.startSystem(Phaser.Physics.ARCADE);
   game.add.image(game.world.centerX, game.world.centerY, 'background').anchor.set(0.5);
 
-  square1 = new Square(25*Math.round(game.world.randomX/25), 25*Math.round(game.world.randomY/25),  'square1');
+  square1 = new Square(25*Math.round(game.world.randomX/25), 25*Math.round(game.world.randomY/25), 'square1');
   
 
-  square2 = new Square(25*Math.round(game.world.randomX/25), 25*Math.round(game.world.randomY/25),  'square2');
-  
-  square3 = new Square(25*Math.round(game.world.randomX/25), 25*Math.round(game.world.randomY/25),  'square3');
+  square2 = new Square(25*Math.round(game.world.randomX/25), 25*Math.round(game.world.randomY/25), 'square2');
+
+  square3 = new Square(25*Math.round(game.world.randomX/25), 25*Math.round(game.world.randomY/25), 'square3');
 
   // robot = new Item(25*Math.round(game.world.randomX/25), 25*Math.round(game.world.randomY/25),  'robot');
 
-  start = new Item(25*Math.round(game.world.randomX/25), 25*Math.round(game.world.randomY/25),  'start');
+  start = new Item(50, 50, 'start');
   start.events.onDragStart.add(start.savePosition, this);
   start.events.onDragStop.add(start.checkPosition, this);
 
-  finish = new Item(25*Math.round(game.world.randomX/25), 25*Math.round(game.world.randomY/25),  'finish');
+  finish = new Item(475, 475, 'finish');
   
   
 
 }
 
 function update() {
-  if (collisionCheck) {
-    game.physics.arcade.overlap(start, square1, start.moveback);
-  }
+  // if (collisionCheck) {
+  //   game.physics.arcade.overlap(start, square1, start.moveback);
+  // }
 }
 
 function render() {  
