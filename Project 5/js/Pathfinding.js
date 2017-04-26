@@ -9,7 +9,11 @@ var square1, square2, square3;
 var startPoint, finishPoint;
 var robot;
 
-var collisionCheck = true;
+var positionCheckS = false;
+var positionCheckF = false;
+var positionCheckSq1 = false;
+var positionCheckSq2 = false;
+var positionCheckSq3 = false;
 
 function test(){
   console.log("Testing\n");
@@ -28,12 +32,26 @@ Square = function(x, y, sprite){
   this.body.bounce.set(1, 1);
   // this.input.mouseUpCallback = this.handleMouseUp;
   game.add.existing(this);
+  this.savedX = this.x;
+  this.savedY = this.y;
 }
 Square.prototype = Object.create(Phaser.Sprite.prototype);
 Square.prototype.constructor = Square;
 Square.prototype.update = function(){
   this.x = 25*Math.round(this.x /25);
   this.y = 25*Math.round(this.y /25);
+}
+
+Square.prototype.checkPositionSq1 = function(){
+  positionCheckSq1 = true;
+}
+
+Square.prototype.checkPositionSq2 = function(){
+  positionCheckSq2 = true;
+}
+
+Square.prototype.checkPositionSq3 = function(){
+  positionCheckSq3 = true;
 }
 
 Item = function(x, y, sprite){
@@ -55,29 +73,15 @@ Item = function(x, y, sprite){
 }
 Item.prototype = Object.create(Phaser.Sprite.prototype);
 Item.prototype.constructor = Item;
-Item.prototype.savePosition = function(){
-  // console.log("saving");
-  // console.log(this.x);
-  // console.log(this.y);
-}
-Item.prototype.checkPosition = function(){
-  // console.log("checkPosition");
-  // game.physics.arcade.overlap(this, square1, this.moveback, null, this);
-  // collisionCheck = true;
-  // this.savedX = this.x;
-  // this.savedY = this.y;
-}
-Item.prototype.moveback = function(){
-  // console.log("moveback");
-  // this.input.enableDrag(false);
-  // console.log(this.savedX);
-  // console.log(this.savedY);
-  // console.log("moveback");
 
-
-  this.x = this.savedX;
-  this.y = this.savedY;
+Item.prototype.checkPositionS = function(){
+  positionCheckS = true;
 }
+
+Item.prototype.checkPositionF = function(){
+  positionCheckF = true;
+}
+
 Item.prototype.update = function(){
   this.x = 25*Math.round(this.x /25) - 12.5;
   this.y = 25*Math.round(this.y /25) - 12.5;
@@ -114,28 +118,105 @@ function create() {
   game.add.image(game.world.centerX, game.world.centerY, 'background').anchor.set(0.5);
 
   square1 = new Square(25*Math.round(game.world.randomX/25), 25*Math.round(game.world.randomY/25), 'square1');
-  
+  square1.events.onDragStop.add(square1.checkPositionSq1, this);  
 
   square2 = new Square(25*Math.round(game.world.randomX/25), 25*Math.round(game.world.randomY/25), 'square2');
+  square2.events.onDragStop.add(square2.checkPositionSq2, this);
 
   square3 = new Square(25*Math.round(game.world.randomX/25), 25*Math.round(game.world.randomY/25), 'square3');
+  square3.events.onDragStop.add(square3.checkPositionSq3, this);
+  
+  squares = game.add.group();
+  squares.add(square1);
+  squares.add(square2);
+  squares.add(square3);
 
   // robot = new Item(25*Math.round(game.world.randomX/25), 25*Math.round(game.world.randomY/25),  'robot');
 
   start = new Item(50, 50, 'start');
-  start.events.onDragStart.add(start.savePosition, this);
-  start.events.onDragStop.add(start.checkPosition, this);
+  start.events.onDragStop.add(start.checkPositionS, this);
 
   finish = new Item(475, 475, 'finish');
+  finish.events.onDragStop.add(finish.checkPositionF, this);
+  
+  items = game.add.group();
+  items.add(start);
+  items.add(finish);
   
   
 
 }
 
 function update() {
-  // if (collisionCheck) {
-  //   game.physics.arcade.overlap(start, square1, start.moveback);
-  // }
+  if (positionCheckS) {
+    if(game.physics.arcade.overlap(start, squares)) {
+		start.x = start.savedX;
+		start.y = start.savedY;
+	}
+	
+	else {
+		start.savedX = start.x;
+		start.savedY = start.y;
+	}
+		
+	positionCheckS = false;
+  }
+  
+  else if (positionCheckF) {
+    if(game.physics.arcade.overlap(finish, squares)) {
+		finish.x = finish.savedX;
+		finish.y = finish.savedY;
+	}
+	
+	else {
+		finish.savedX = finish.x;
+		finish.savedY = finish.y;
+	}
+		
+	positionCheckF = false;
+  }
+  
+  else if (positionCheckSq1) {
+		if(game.physics.arcade.overlap(square1, items)) {
+			square1.x = square1.savedX;
+			square1.y = square1.savedY;
+		}
+		
+		else {
+			square1.savedX = square1.x;
+			square1.savedY = square1.y;
+		}
+			
+		positionCheckSq1 = false;
+	}
+	
+	else if (positionCheckSq2) {
+		if(game.physics.arcade.overlap(square2, items)) {
+			square2.x = square2.savedX;
+			square2.y = square2.savedY;
+		}
+		
+		else {
+			square2.savedX = square2.x;
+			square2.savedY = square2.y;
+		}
+			
+		positionCheckSq2 = false;
+	}
+	
+	else if (positionCheckSq3) {
+		if(game.physics.arcade.overlap(square3, items)) {
+			square3.x = square3.savedX;
+			square3.y = square3.savedY;
+		}
+		
+		else {
+			square3.savedX = square3.x;
+			square3.savedY = square3.y;
+		}
+			
+		positionCheckSq3 = false;
+	}
 }
 
 function render() {  
